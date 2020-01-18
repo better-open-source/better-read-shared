@@ -15,8 +15,11 @@ namespace BetterRead.Shared.Repository
     {
         private readonly HtmlWeb _htmlWeb;
 
-        public BookSheetsRepository() => 
+        public BookSheetsRepository()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _htmlWeb = new HtmlWeb {OverrideEncoding = Encoding.GetEncoding("windows-1251")};
+        }
 
         public async Task<IEnumerable<Sheet>> GetSheetsAsync(int bookId)
         {
@@ -40,7 +43,7 @@ namespace BetterRead.Shared.Repository
         
         private static IEnumerable<SheetContent> GetNodeContent(HtmlNode htmlNode)
         {
-            var nodes = htmlNode.QuerySelectorAll("div.MsoNormal").SingleOrDefault()?.ChildNodes.Nodes();
+            var nodes = htmlNode.QuerySelectorAll("div.MsoNormal").SingleOrDefault()?.ChildNodes;
             if (nodes == null) yield break;
 
             foreach (var node in nodes)
@@ -50,7 +53,7 @@ namespace BetterRead.Shared.Repository
                 
                 if (node.Attributes.Any(attr => attr.Value == "MsoNormal"))
                     yield return GetParagraphSheetContent(node);
-                
+                                
                 if (node.Attributes.Any(attr => attr.Name == "src" && attr.Value.Contains("img/photo_books/")))
                     yield return GetImageSheetContent(node, BookUrlPatterns.BaseUrl);
             }

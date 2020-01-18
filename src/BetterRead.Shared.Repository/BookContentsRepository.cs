@@ -14,8 +14,11 @@ namespace BetterRead.Shared.Repository
     {
         private readonly HtmlWeb _htmlWeb;
 
-        public BookContentsRepository() => 
+        public BookContentsRepository()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _htmlWeb = new HtmlWeb {OverrideEncoding = Encoding.GetEncoding("windows-1251")};
+        }
 
         public async Task<IEnumerable<Content>> GetContentsAsync(int bookId)
         {

@@ -1,0 +1,37 @@
+name: NuGet Generation
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    name: Update NuGet
+    runs-on: windows-latest
+   
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@master
+
+      - name: Set release version as environment variable
+        run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+        
+      - name: Install NuGet client
+        uses: warrenbuckley/setup-nuget@v1
+
+      - name: dotnet pack as Release
+        run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output ./output
+
+      - name: Setup Nuget.exe in PATH
+        uses: warrenbuckley/Setup-Nuget@v1
+
+      - name: nuget Add Source to GitHub Package Repo
+        run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: nuget SetAPIKey for GitHub Package Repo
+        run: nuget setApiKey ${{ secrets.GITHUB_TOKEN }} -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json"
+
+      - name: nuget Push to GH Nuget Registry
+        working-directory: './output'
+        run: nuget push **/*.nupkg -Source "GPR" -SkipDuplicate

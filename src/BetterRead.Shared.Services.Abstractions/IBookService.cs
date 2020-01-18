@@ -7,5 +7,7 @@ namespace BetterRead.Shared.Services.Abstractions
     {
         Task<Book> GetBookByIdAsync(int bookId);
         Task<Book> GetBookByUrlAsync(string url);
+        Task<BookInfo> GetBookInfoByIdAsync(int bookId);
+        Task<BookInfo> GetBookInfoByUrlAsync(string url);
     }
 }

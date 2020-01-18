@@ -5,6 +5,6 @@ namespace BetterRead.Shared.Domain.Book
     public class Note
     {
         public int Id { get; set; }
-        public List<string> Contents { get; set; }
+        public IEnumerable<string> Contents { get; set; }
     }
 }

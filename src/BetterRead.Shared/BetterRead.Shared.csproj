@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BetterRead.Shared.Abstractions\BetterRead.Shared.Abstractions.csproj" />
+      <ProjectReference Include="..\BetterRead.Shared.Domain\BetterRead.Shared.Domain.csproj" />
+      <ProjectReference Include="..\BetterRead.Shared.Services.Abstractions\BetterRead.Shared.Services.Abstractions.csproj" />
+      <ProjectReference Include="..\BetterRead.Shared.Services\BetterRead.Shared.Services.csproj" />
+    </ItemGroup>
+
+</Project>

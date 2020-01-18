@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BetterRead.Shared.Repository.Abstractions\BetterRead.Shared.Repository.Abstractions.csproj" />
+      <ProjectReference Include="..\BetterRead.Shared.Repository\BetterRead.Shared.Repository.csproj" />
       <ProjectReference Include="..\BetterRead.Shared.Services.Abstractions\BetterRead.Shared.Services.Abstractions.csproj" />
     </ItemGroup>
 
