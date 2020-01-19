@@ -30,14 +30,14 @@ jobs:
           nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
           nuget-api-key-source: "https://nuget.pkg.github.com/itkerry-open-source/index.json"
 
-      - name: nuget Add Source to GitHub Package Repo
+      - name: NuGet Add sources to GitHub Package Repo
         run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
 
-      - name: nuget Push to GH Nuget Registry
+      - name: NuGet Push to GH Nuget Registry
         working-directory: './output'
         run: nuget push *.nupkg -Source "GPR" -SkipDuplicate
 
-      - name: Create Release
+      - name: Create a Release
         id: create_release
         uses: actions/create-release@v1.0.0
         env:
@@ -59,6 +59,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: '.output/better-read-shared.zip'
+          asset_path: './output/better-read-shared.zip'
           asset_name: better-read-shared.zip
           asset_content_type: application/zip
