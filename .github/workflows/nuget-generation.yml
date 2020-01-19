@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Update NuGet
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
    
     steps:
       - name: Checkout repository
@@ -16,6 +16,10 @@ jobs:
 
       - name: Set release version as environment variable
         run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+      - name: Test
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
         
       - name: Install NuGet client
         uses: warrenbuckley/setup-nuget@v1
