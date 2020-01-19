@@ -1,4 +1,4 @@
-name: NuGet Generation
+name: Release NuGet
 
 on:
   push:
@@ -23,21 +23,6 @@ jobs:
         working-directory: 'src/BetterRead.Shared'
         run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output ../../output
       
-      - name: Upload artifact
-        uses: actions/upload-artifact@v1.0.0
-        with:
-          name: BetterRead.Shared.Artifacts
-          path: ./output/*.nupkg
-          
-  nuget-push:
-    name: Push Nuget
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v1.0.0
-        with:
-          name: BetterRead.Shared.Artifacts
-          
       - name: Setup NuGet.exe for use with actions
         uses: NuGet/setup-nuget@v1.0.2
         with:
@@ -49,12 +34,9 @@ jobs:
         run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
 
       - name: nuget Push to GH Nuget Registry
+        working-directory: '../output'
         run: nuget push *.nupkg -Source "GPR" -SkipDuplicate
-        
-  release-create:
-    name: Create a Release
-    runs-on: ubuntu-latest
-    steps:
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1.0.0
@@ -66,12 +48,8 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Download artifact
-        uses: actions/download-artifact@v1.0.0
-        with:
-          name: BetterRead.Shared.Artifacts
-      
       - name: Zip artifacts
+        working-directory: '../output'
         run: zip --junk-paths better-read-shared *.nupkg
           
       - name: Upload Release Asset
@@ -81,6 +59,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./better-read-shared.zip
+          asset_path: '../better-read-shared.zip'
           asset_name: better-read-shared.zip
           asset_content_type: application/zip
