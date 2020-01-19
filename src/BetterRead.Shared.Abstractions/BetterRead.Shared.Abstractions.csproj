@@ -2,6 +2,12 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
+        
+        <RepositoryUrl>https://github.com/itkerry-open-source/better-read-shared</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+
+        <AssemblyVersion>1.0.1</AssemblyVersion>
+        <FileVersion>1.0.1</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

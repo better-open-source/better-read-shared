@@ -13,10 +13,18 @@
 
         <AssemblyVersion>1.0.1</AssemblyVersion>
         <FileVersion>1.0.1</FileVersion>
+    </PropertyGroup>
 
+    <PropertyGroup>
         <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     </PropertyGroup>
 
+    <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+        <ItemGroup>
+            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+        </ItemGroup>
+    </Target>
+    
     <ItemGroup>
       <ProjectReference Include="..\BetterRead.Shared.Abstractions\BetterRead.Shared.Abstractions.csproj" />
       <ProjectReference Include="..\BetterRead.Shared.Domain\BetterRead.Shared.Domain.csproj" />
@@ -24,9 +32,4 @@
       <ProjectReference Include="..\BetterRead.Shared.Services\BetterRead.Shared.Services.csproj" />
     </ItemGroup>
     
-    <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
-        <ItemGroup>
-            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-        </ItemGroup>
-    </Target>
 </Project>
