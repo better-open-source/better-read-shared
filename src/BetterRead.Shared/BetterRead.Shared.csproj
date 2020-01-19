@@ -11,8 +11,10 @@
         <RepositoryUrl>https://github.com/itkerry-open-source/better-read-shared</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
 
-        <AssemblyVersion>1.0.0</AssemblyVersion>
-        <FileVersion>1.0.0</FileVersion>
+        <AssemblyVersion>1.0.1</AssemblyVersion>
+        <FileVersion>1.0.1</FileVersion>
+
+        <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,5 +23,10 @@
       <ProjectReference Include="..\BetterRead.Shared.Services.Abstractions\BetterRead.Shared.Services.Abstractions.csproj" />
       <ProjectReference Include="..\BetterRead.Shared.Services\BetterRead.Shared.Services.csproj" />
     </ItemGroup>
-
+    
+    <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+        <ItemGroup>
+            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+        </ItemGroup>
+    </Target>
 </Project>
