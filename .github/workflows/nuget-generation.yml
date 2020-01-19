@@ -3,28 +3,41 @@ name: NuGet Generation
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
-  build:
-    name: Update NuGet
+  nuget-pack:
+    name: Create NuGet
     runs-on: ubuntu-latest
-   
     steps:
       - name: Checkout repository
         uses: actions/checkout@master
-
+        
       - name: Set release version as environment variable
-        run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
-      - name: Test
         run: |
+          echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
-  
+          
       - name: dotnet pack as Release
         working-directory: 'src/BetterRead.Shared'
         run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output ../../output
-
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: BetterRead.Shared.Artifacts
+          path: ./output/*.nupkg
+          
+  nuget-push:
+    name: Push Nuget
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v1.0.0
+        with:
+          name: BetterRead.Shared.Artifacts
+          
       - name: Setup NuGet.exe for use with actions
         uses: NuGet/setup-nuget@v1.0.2
         with:
@@ -36,5 +49,38 @@ jobs:
         run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
 
       - name: nuget Push to GH Nuget Registry
-        working-directory: './output'
         run: nuget push *.nupkg -Source "GPR" -SkipDuplicate
+        
+  release-create:
+    name: Create a Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Download artifact
+        uses: actions/download-artifact@v1.0.0
+        with:
+          name: BetterRead.Shared.Artifacts
+      
+      - name: Zip artifacts
+        run: zip --junk-paths better-read-shared *.nupkg
+          
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./better-read-shared.zip
+          asset_name: better-read-shared.zip
+          asset_content_type: application/zip
