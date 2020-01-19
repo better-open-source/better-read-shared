@@ -21,7 +21,7 @@ jobs:
         uses: warrenbuckley/setup-nuget@v1
 
       - name: dotnet pack as Release
-        working-directory: './src/BetterRead.Shared'
+        working-directory: 'src/BetterRead.Shared'
         run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output ../../output
 
       - name: Setup Nuget.exe in PATH
