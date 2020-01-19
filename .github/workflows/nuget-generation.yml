@@ -20,23 +20,21 @@ jobs:
         run: |
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
-        
-      - name: Install NuGet client
-        uses: warrenbuckley/setup-nuget@v1
-
+  
       - name: dotnet pack as Release
         working-directory: 'src/BetterRead.Shared'
         run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output ../../output
 
-      - name: Setup Nuget.exe in PATH
-        uses: warrenbuckley/Setup-Nuget@v1
+      - name: Setup NuGet.exe for use with actions
+        uses: NuGet/setup-nuget@v1.0.2
+        with:
+          nuget-version: latest
+          nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
+          nuget-api-key-source: "https://nuget.pkg.github.com/itkerry-open-source/index.json"
 
       - name: nuget Add Source to GitHub Package Repo
         run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
 
-      - name: nuget SetAPIKey for GitHub Package Repo
-        run: nuget setApiKey ${{ secrets.GITHUB_TOKEN }} -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json"
-
       - name: nuget Push to GH Nuget Registry
         working-directory: './output'
-        run: nuget push **/*.nupkg -Source "GPR" -SkipDuplicate
+        run: nuget push *.nupkg -Source "GPR" -SkipDuplicate
