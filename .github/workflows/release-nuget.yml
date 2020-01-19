@@ -19,6 +19,9 @@ jobs:
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
           
+      - name: dotnet build as Release
+        run: dotnet build --configuration Release
+        
       - name: dotnet pack as Release
         working-directory: 'src/BetterRead.Shared'
         run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output ../../output
