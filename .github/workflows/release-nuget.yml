@@ -18,10 +18,7 @@ jobs:
           echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
-        
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '3.1.100'
+          
       - name: dotnet pack as Release
         run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output output
       
@@ -29,8 +26,6 @@ jobs:
         uses: NuGet/setup-nuget@v1.0.2
         with:
           nuget-version: latest
-          nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
-          nuget-api-key-source: "https://nuget.pkg.github.com/itkerry-open-source/index.json"
 
       - name: NuGet Add sources to GitHub Package Repo
         run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
