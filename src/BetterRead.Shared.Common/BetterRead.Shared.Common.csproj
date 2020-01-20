@@ -2,17 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-
-        <PackageId>BetterRead.Shared.Common</PackageId>
-        <Authors>iTKerry</Authors>
-        <Company>iTKerry's OpenSource org</Company>
-        <Description>A shared package for better-read projects</Description>
-        <PackageTags>better-read</PackageTags>
-        <RepositoryUrl>https://github.com/itkerry-open-source/better-read-shared</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-
-        <AssemblyVersion>1.0.1</AssemblyVersion>
-        <FileVersion>1.0.1</FileVersion>
     </PropertyGroup>
 
 </Project>

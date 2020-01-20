@@ -22,4 +22,11 @@
       <ProjectReference Include="..\BetterRead.Shared.Services\BetterRead.Shared.Services.csproj" />
     </ItemGroup>
     
+    <ItemGroup>
+        <Content Include="bin\$(Configuration)\$(TargetFramework)\*.dll"> 
+            <PackagePath>lib\$(TargetFramework)\</PackagePath> 
+            <Pack>true</Pack> 
+        </Content>
+    </ItemGroup>
+    
 </Project>
