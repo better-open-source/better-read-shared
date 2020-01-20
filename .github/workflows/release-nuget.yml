@@ -26,6 +26,8 @@ jobs:
         uses: NuGet/setup-nuget@v1.0.2
         with:
           nuget-version: latest
+          nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
+          nuget-api-key-source: "https://nuget.pkg.github.com/itkerry-open-source/index.json"
 
       - name: NuGet Add sources to GitHub Package Repo
         run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
