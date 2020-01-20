@@ -16,7 +16,7 @@ jobs:
       - name: Set release version as environment variable
         shell: bash
         run: |
-          echo $SOURCE_NAME = ${env:GITHUB_REF} -replace 'refs\/\w+\/', ''
+          echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
           
