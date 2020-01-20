@@ -21,23 +21,10 @@ jobs:
           
       - name: dotnet pack as Release
         run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output output
-      
-      - name: Setup NuGet.exe for use with actions
-        uses: NuGet/setup-nuget@v1.0.2
-        with:
-          nuget-version: latest
-          nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
-          nuget-api-key-source: "https://nuget.pkg.github.com/itkerry-open-source/index.json"
-
-      - name: NuGet Add sources to GitHub Package Repo
-        run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
-
-      - name: nuget SetAPIKey for GitHub Package Repo
-        run: nuget setApiKey ${{ secrets.GITHUB_TOKEN }} -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json"
-        
-      - name: NuGet Push to GH Nuget Registry
+   
+      - name: dotnet nuget push
         working-directory: './output'
-        run: nuget push *.nupkg -Source "GPR" -SkipDuplicate -Verbosity detailed
+        run: dotnet nuget push *.nupkg --source "https://nuget.pkg.github.com/itkerry-open-source/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
 
       - name: Create a Release
         id: create_release
