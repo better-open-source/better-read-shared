@@ -53,6 +53,7 @@ jobs:
           prerelease: false
 
       - name: Zip artifacts
+        shell: bash
         working-directory: './output'
         run: zip --junk-paths better-read-shared *.nupkg
           
