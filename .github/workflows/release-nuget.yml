@@ -20,7 +20,7 @@ jobs:
           echo ${{ env.RELEASE_VERSION }}
           
       - name: Setup .NET v3.1.100
-      - uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
             
