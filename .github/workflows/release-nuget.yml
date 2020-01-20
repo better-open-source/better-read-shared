@@ -8,29 +8,38 @@ on:
 jobs:
   release:
     name: Build, Pack & Release NuGet
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@master
         
-      - name: Set release version as environment variable
-        run: |
-          echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
-          echo $RELEASE_VERSION
-          echo ${{ env.RELEASE_VERSION }}
+      - uses: olegtarasov/get-tag@v1
+        id: tagName
+      - name: Some other step
+        with:
+            tagname: ${{ steps.tagName.outputs.tag }}
           
       - name: Setup .NET v3.1.100
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
-            
+          
       - name: dotnet pack as Release
-        run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output output
+        run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.tagName.outputs.tag }} -p:Version=${{ steps.tagName.outputs.tag }} --output output
    
-      - name: dotnet nuget push
-        working-directory: './output'
-        run: dotnet nuget push *.nupkg --source "https://nuget.pkg.github.com/itkerry-open-source/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+      - name: Install NuGet client
+        uses: warrenbuckley/setup-nuget@v1
+        
+      - name: nuget Add Source to GitHub Package Repo
+        run: nuget sources Add -Name "GPR" -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json" -UserName itkerry -Password ${{ secrets.GITHUB_TOKEN }}
 
+      - name: nuget SetAPIKey for GitHub Package Repo
+        run: nuget setApiKey ${{ secrets.GITHUB_TOKEN }} -Source "https://nuget.pkg.github.com/itkerry-open-source/index.json"
+
+      - name: nuget Push to GH Nuget Registry
+        working-directory: './output'
+        run: nuget push *.nupkg -Source "GPR" -SkipDuplicate
+        
       - name: Create a Release
         id: create_release
         uses: actions/create-release@v1.0.0
