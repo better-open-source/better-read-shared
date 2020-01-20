@@ -20,8 +20,7 @@ jobs:
           echo ${{ env.RELEASE_VERSION }}
         
       - name: dotnet pack as Release
-        working-directory: 'src/BetterRead.Shared'
-        run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output ../../output
+        run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output output
       
       - name: Setup NuGet.exe for use with actions
         uses: NuGet/setup-nuget@v1.0.2
