@@ -19,6 +19,9 @@ jobs:
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
         
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
       - name: dotnet pack as Release
         run: dotnet pack --configuration Release -p:PackageVersion=${{ env.RELEASE_VERSION }} -p:Version=${{ env.RELEASE_VERSION }} --output output
       
