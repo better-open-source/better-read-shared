@@ -9,13 +9,15 @@ jobs:
   release:
     name: Build, Pack & Release NuGet
     runs-on: windows-latest
+    env:
+      RELEASE_VERSION: ${env:GITHUB_REF} -replace 'refs\/tags\/', ''
     steps:
       - name: Checkout repository
         uses: actions/checkout@master
         
       - name: Set release version as environment variable
         run: |
-          echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+          echo $SOURCE_NAME = ${env:GITHUB_REF} -replace 'refs\/\w+\/', ''
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
           
