@@ -34,7 +34,7 @@ jobs:
 
       - name: NuGet Push to GH Nuget Registry
         working-directory: './output'
-        run: nuget push *.nupkg -ApiKey ${{ secrets.GITHUB_TOKEN }} -Source "GPR" -SkipDuplicate
+        run: nuget push *.nupkg -Source "GPR" -SkipDuplicate -Verbosity detailed
 
       - name: Create a Release
         id: create_release
