@@ -53,9 +53,8 @@ jobs:
           prerelease: false
 
       - name: Zip artifacts
-        shell: bash
         working-directory: './output'
-        run: zip --junk-paths better-read-shared *.nupkg
+        run: 7z a -tzip better-read-shared.zip *.nupkg
           
       - name: Upload Release Asset
         id: upload-release-asset 
