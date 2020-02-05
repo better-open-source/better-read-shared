@@ -36,5 +36,10 @@
         /// Book image URL pattern: 0 - book ID; 1 - Image number.
         /// </summary>
         public const string ContentImage = BaseUrl + "/img/photo_books/{0}/i_{1:000}.jpg";
+
+        /// <summary>
+        /// Book search URL pattern.
+        /// </summary>
+        public const string Search = BaseUrl + "/search.php";
     }
 }

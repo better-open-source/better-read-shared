@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using BetterRead.Shared.Repository.Abstractions;
 using Xunit;
@@ -23,6 +23,20 @@ namespace BetterRead.Shared.Services.Tests
             Assert.NotNull(book);
         }
 
+        [Fact]
+        public async Task GetSearchBooks_WhenValidName_ShouldNotBeNull()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            //Assign
+            var sut = GetSut();
+
+            //Act
+            var books = await sut.SearchBooks("Война миров");
+
+            //Assert
+            Assert.NotNull(books);
+        }
+
         private static BookService GetSut() => 
             new BookService();
 
@@ -30,7 +44,8 @@ namespace BetterRead.Shared.Services.Tests
             IBookInfoRepository infoRepository,
             IBookSheetsRepository sheetsRepository,
             IBookContentsRepository contentsRepository,
-            IBookNotesRepository notesRepository) =>
-            new BookService(infoRepository, sheetsRepository, contentsRepository, notesRepository);
+            IBookNotesRepository notesRepository,
+            IBookSearchRepository bookSearchRepository) =>
+            new BookService(infoRepository, sheetsRepository, contentsRepository, notesRepository, bookSearchRepository);
     }
 }

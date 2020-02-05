@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
 using BetterRead.Shared.Domain.Book;
@@ -14,10 +15,11 @@ namespace BetterRead.Shared.Services
         private readonly IBookSheetsRepository _sheetsRepository;
         private readonly IBookContentsRepository _contentsRepository;
         private readonly IBookNotesRepository _notesRepository;
+        private readonly IBookSearchRepository _bookSearchRepository;
 
         public BookService()
             : this(new BookInfoRepository(), new BookSheetsRepository(), new BookContentsRepository(),
-                new BookNotesRepository())
+                new BookNotesRepository(), new BookSearchRepository())
         {
         }
 
@@ -25,12 +27,14 @@ namespace BetterRead.Shared.Services
             IBookInfoRepository infoRepository,
             IBookSheetsRepository sheetsRepository,
             IBookContentsRepository contentsRepository,
-            IBookNotesRepository notesRepository)
+            IBookNotesRepository notesRepository,
+            IBookSearchRepository bookSearchRepository)
         {
             _sheetsRepository = sheetsRepository ?? throw new ArgumentNullException(nameof(sheetsRepository));
             _infoRepository = infoRepository ?? throw new ArgumentNullException(nameof(infoRepository));
             _contentsRepository = contentsRepository ?? throw new ArgumentNullException(nameof(contentsRepository));
             _notesRepository = notesRepository ?? throw new ArgumentNullException(nameof(notesRepository));
+            _bookSearchRepository = bookSearchRepository ?? throw new ArgumentNullException(nameof(bookSearchRepository));
         }
 
         public async Task<Book> GetBookByIdAsync(int bookId) => 
@@ -44,6 +48,9 @@ namespace BetterRead.Shared.Services
 
         public async Task<BookInfo> GetBookInfoByUrlAsync(string url) => 
             await _infoRepository.GetBookInfoAsync(GetBookId(url));
+
+        public async Task<IEnumerable<BookInfo>> SearchBooks(string name)=>
+            await _bookSearchRepository.Search(name);
 
         private static int GetBookId(string url)
         {

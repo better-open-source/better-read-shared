@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using BetterRead.Shared.Abstractions;
@@ -30,5 +31,8 @@ namespace BetterRead.Shared
 
         public async Task<BookInfo> GetBookInfoAsync(string url) => 
             await _bookService.GetBookInfoByUrlAsync(url);
+
+        public async Task<IEnumerable<BookInfo>> SearchBooks(string name) =>
+            await _bookService.SearchBooks(name);
     }
 }
