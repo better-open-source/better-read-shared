@@ -25,7 +25,7 @@ namespace BetterRead.Shared.Repository
             _htmlWeb = new HtmlWeb { OverrideEncoding = Encoding.GetEncoding("windows-1251") };
         }
 
-        public async Task<IEnumerable<BookInfo>> Search(string name)
+        public async Task<IEnumerable<BookInfo>> SearchBooks(string name)
         {
             var uri = new Uri(BookUrlPatterns.Search);
             var node = await GetNode(uri, name);
