@@ -31,7 +31,7 @@ namespace BetterRead.Shared.Services.Tests
             var sut = GetSut();
 
             //Act
-            var books = await sut.SearchBooks("Война миров");
+            var books = await sut.SearchBooks("Война и мир");
 
             //Assert
             Assert.NotNull(books);

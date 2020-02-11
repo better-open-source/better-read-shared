@@ -9,5 +9,8 @@ namespace BetterRead.Shared.Repository.Abstractions
     public interface IBookSearchRepository
     {
         Task<IEnumerable<BookInfo>> SearchBooks(string name);
+        Task<IEnumerable<BookInfo>> SearchBooksByName(string name);
+        Task<IEnumerable<BookInfo>> SearchAuthors(string author);
+        Task<IEnumerable<BookInfo>> SearchBooksBySeries(string series);
     }
 }

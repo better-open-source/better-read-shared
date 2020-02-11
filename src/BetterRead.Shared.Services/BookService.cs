@@ -52,6 +52,15 @@ namespace BetterRead.Shared.Services
         public async Task<IEnumerable<BookInfo>> SearchBooks(string name)=>
             await _bookSearchRepository.SearchBooks(name);
 
+        public async Task<IEnumerable<BookInfo>> SearchBooksByName(string name) =>
+            await _bookSearchRepository.SearchBooksByName(name);
+
+        public async Task<IEnumerable<BookInfo>> SearchAuthors(string author) =>
+            await _bookSearchRepository.SearchAuthors(author);
+
+        public async Task<IEnumerable<BookInfo>> SearchBooksBySeries(string series) =>
+            await _bookSearchRepository.SearchBooksBySeries(series);
+
         private static int GetBookId(string url)
         {
             var uri = new Uri(url);

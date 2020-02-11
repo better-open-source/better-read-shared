@@ -25,36 +25,119 @@ namespace BetterRead.Shared.Repository
             _htmlWeb = new HtmlWeb { OverrideEncoding = Encoding.GetEncoding("windows-1251") };
         }
 
-        public async Task<IEnumerable<BookInfo>> SearchBooks(string name)
+        #region Method loveread.me
+      
+
+        public async Task<IEnumerable<BookInfo>> SearchBooksByName(string name)
         {
-            var uri = new Uri(BookUrlPatterns.Search);
-            var node = await GetNode(uri, name);
-            var books = GetBooks(node);
+            var url = string.Format(BookUrlPatterns.SearchByName, name);
+
+            var htmlDocument = await _htmlWeb.LoadFromWebAsync(url);
+            var books = GetBooksByName(htmlDocument.DocumentNode);
 
             return books;
         }
 
-        private async Task<HtmlNode> GetNode(Uri uri, string name)
+        public async Task<IEnumerable<BookInfo>> SearchAuthors(string author)
         {
-            var baseUri = uri.GetComponents(UriComponents.Scheme | UriComponents.Host | UriComponents.Port | UriComponents.Path, UriFormat.UriEscaped);
-            var query = QueryHelpers.ParseQuery(uri.Query);
-            var items = query.SelectMany(x => x.Value, (col, value) => new KeyValuePair<string, string>(col.Key, value)).ToList();
-            var qb = new QueryBuilder(items)
-            {
-                { "search", EncodingHelpers.GetCyrillicEncoding(name)}
-            };
-            var searchQuery = baseUri + qb.ToQueryString();
-            var htmlDocument = await _htmlWeb.LoadFromWebAsync(searchQuery);
-            var documentNode = htmlDocument.DocumentNode;
+            var url = string.Format(BookUrlPatterns.SearchAuthor, author);
 
-            return documentNode;
+            var htmlDocument = await _htmlWeb.LoadFromWebAsync(url);
+            var authors = GetAuthors(htmlDocument.DocumentNode);
+
+            return authors;
         }
 
+        public async Task<IEnumerable<BookInfo>> SearchBooksBySeries(string series)
+        {
+            var url = string.Format(BookUrlPatterns.SearchBySeries, series);
+
+            var htmlDocument = await _htmlWeb.LoadFromWebAsync(url);
+            var serieses = GetSerieses(htmlDocument.DocumentNode);
+
+            return serieses;
+        }
+        #endregion
+
+        #region Generate List loveread.me
+        private static IEnumerable<BookInfo> GetBooksByName(HtmlNode node) =>
+            node.QuerySelectorAll("div.bodyUnit")
+                .Select(GetBookByName);
+
+        private static IEnumerable<BookInfo> GetAuthors(HtmlNode node) =>
+            node.QuerySelectorAll("div.bodyUnit")
+                .Select(GetAuthor);
+
+        private static IEnumerable<BookInfo> GetSerieses(HtmlNode node) =>
+            node.QuerySelectorAll("div.seriesBooks")
+                .Select(GetSeries);
+
+        #endregion
+
+        #region Generate Object loveread.me
+        private static BookInfo GetBookByName(HtmlNode node) =>
+            new BookInfo
+            {
+                ImageUrl = GetImage(node),
+                Name = GetName(node),
+                Url = GetUrl(node),
+                BookId = GetBookId(GetUrl(node))
+            };
+
+        private static BookInfo GetAuthor(HtmlNode node) =>
+            new BookInfo
+            {
+                ImageUrl = GetImage(node),
+                Url = GetUrl(node),
+            };
+
+        private static BookInfo GetSeries(HtmlNode node) =>
+            new BookInfo
+            {
+                //  ImageUrl = GetImage(node),
+                Name = GetSeriesName(node),
+                Url = GetSeriesUrl(node),
+                BookId = GetBookId(GetSeriesUrl(node))
+            };
+
+        #endregion
+
+        #region Scraping Method loveread.me
+        private static string GetImage(HtmlNode node) =>
+            node.QuerySelector("img").GetAttributeValue("src", string.Empty);
+
+        private static string GetName(HtmlNode node) =>
+            node.QuerySelector("div.openBook > a").InnerText.Trim();
+
+        private static string GetUrl(HtmlNode node) =>
+            $"{BookUrlPatterns.SecondBaseUrl}/" +
+            $"{node.QuerySelector("div.shortDescription > div > a").GetAttributeValue("href", string.Empty)}";
+
+        private static string GetSeriesName(HtmlNode node) =>
+            node.QuerySelector("a").InnerText.Trim();
+
+        private static string GetSeriesUrl(HtmlNode node) =>
+            $"{BookUrlPatterns.SecondBaseUrl}/" +
+            $"{node.QuerySelector("a").GetAttributeValue("href", string.Empty)}";
+
+        #endregion
+
+        #region Method loveread.ec
+        public async Task<IEnumerable<BookInfo>> SearchBooks(string name)
+        {
+            var url = string.Format(BookUrlPatterns.Search, EncodingHelpers.GetCyrillicEncoding(name));
+
+            var htmlDocument = await _htmlWeb.LoadFromWebAsync(url);
+            var books = GetBooks(htmlDocument.DocumentNode);
+
+            return books;
+        }
         private static IEnumerable<BookInfo> GetBooks(HtmlNode node) =>
             node
                 .QuerySelector("ul.let_ul")
                 .QuerySelectorAll("li[style]")
                 .Select(GetContentFromNode);
+
 
         private static BookInfo GetContentFromNode(HtmlNode node) =>
             new BookInfo
@@ -74,7 +157,7 @@ namespace BetterRead.Shared.Repository
 
         private static string GetBookAuthor(HtmlNode node) =>
             node.QuerySelectorAll("a").LastOrDefault()?.InnerText.Trim();
-       
+
         private static int GetBookId(string url)
         {
             var uri = new Uri(url);
@@ -82,8 +165,6 @@ namespace BetterRead.Shared.Repository
 
             return int.Parse(queryId);
         }
-
-      
-
+        #endregion
     }
 }

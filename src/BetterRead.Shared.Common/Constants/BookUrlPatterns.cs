@@ -6,7 +6,8 @@
     public static class BookUrlPatterns
     {
         public const string BaseUrl = "http://loveread.ec";
-        
+
+        public const string SecondBaseUrl = "http://loveread.me";
         /// <summary>
         /// Book URL pattern: 0 - book ID.
         /// </summary>
@@ -36,10 +37,16 @@
         /// Book image URL pattern: 0 - book ID; 1 - Image number.
         /// </summary>
         public const string ContentImage = BaseUrl + "/img/photo_books/{0}/i_{1:000}.jpg";
-
         /// <summary>
         /// Book search URL pattern.
         /// </summary>
-        public const string Search = BaseUrl + "/search.php";
+        public const string Search = BaseUrl + "/search.php?search={0}";
+
+        public const string SearchByName = SecondBaseUrl + "/search.php?q={0}&sa=Поиск&searchBook=yes";
+
+        public const string SearchAuthor = SecondBaseUrl + "/search.php?q={0}&sa=Поиск&searchAuthor=yes";
+
+        public const string SearchBySeries = SecondBaseUrl + "/search.php?q={0}&sa=Поиск&searchSeriesBook=yes";
+
     }
 }
