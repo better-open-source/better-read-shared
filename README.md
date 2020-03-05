@@ -8,3 +8,8 @@
 
 [![Build Status](https://dev.azure.com/itkerry-open-source/better-read/_apis/build/status/1?api-version=5.1-preview.1)](https://dev.azure.com/itkerry-open-source/better-read/_build?definitionId=1)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/itkerry-open-source/better-read-shared/blob/master/LICENSE.md)
+
+## Contributors
+A big thanks to the project contributors!
+ * [Denis Stakhiv](https://github.com/lvyyln)
+ * [Evhen Kovtunov](https://github.com/idk-ctrl)
