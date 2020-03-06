@@ -99,9 +99,8 @@ stages:
               command: 'pack'
               configuration: $(buildConfiguration)
               packagesToPack: '**/*.csproj'
-              nobuild: true
-              includesymbols: false
-              includesource: false
+              includesymbols: true
+              includesource: true
               versioningScheme: 'off'
           - task: PublishBuildArtifacts@1
             displayName: 'Publish the Artifacts'
