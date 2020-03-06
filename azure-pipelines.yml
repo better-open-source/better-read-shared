@@ -9,29 +9,6 @@ variables:
     buildConfiguration: 'Release'
 
 stages:
-  - stage: Pull Request
-    condition: eq(variables['Build.Reason'], 'PullRequest')
-    jobs:
-      - job: Test
-        steps:
-          - task: DotNetCoreCLI@2
-            displayName: 'dotnet restore'
-            inputs:
-              command: restore
-          - task: DotNetCoreCLI@2
-            displayName: 'dotnet build'
-            inputs:
-              command: build
-              arguments: '--no-restore'
-              configuration: $(buildConfiguration)
-          - task: DotNetCoreCLI@2
-            displayName: 'dotnet test'
-            inputs:
-              command: test
-              nobuild: true
-              publishTestResults: true
-              configuration: $(buildConfiguration)
-              arguments: '--collect "Code coverage"'
   - stage: Main Stage
     condition: ne(variables['Build.Reason'], 'PullRequest')
     jobs:
