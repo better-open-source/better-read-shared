@@ -58,4 +58,19 @@ stages:
               publishTestResults: true
               configuration: $(buildConfiguration)
               arguments: '--collect "Code coverage"'
-          #publish release
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet pack'
+            inputs:
+              command: 'pack'
+              configuration: $(buildConfiguration)
+              packagesToPack: '**/*.csproj'
+              nobuild: true
+              includesymbols: true
+              includesource: true
+              versioningScheme: 'off'
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish the Artifacts'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
