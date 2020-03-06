@@ -5,16 +5,16 @@
 
     <PropertyGroup>
         <VersionPrefix>1.5.1</VersionPrefix>
-        <Authors>Alex Katrynets</Authors>
-        <Copyright>Copyright © $([System.DateTime]::Now.Year)</Copyright>
-        <Description>TBA</Description>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>CHANGELOG.md</PackageReleaseNotes>
 
-        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-        <LangVersion>latest</LangVersion>
-        <PublishRepositoryUrl>https://github.com/itkerry-open-source/better-read-shared</PublishRepositoryUrl>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <Authors>iTKerry</Authors>
+        <Company>iTKerry</Company>
+        <Description>A package for better-read projects</Description>
+        <PackageTags>better-read</PackageTags>
+        <RepositoryUrl>https://github.com/iTKerry/better-read-shared-cs</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
     </PropertyGroup>
 
     <Choose>
