@@ -16,7 +16,6 @@ namespace BetterRead.Shared.Repository
 
         public BookContentsRepository()
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _htmlWeb = new HtmlWeb {OverrideEncoding = Encoding.GetEncoding("windows-1251")};
         }
 

@@ -1,18 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
-
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <PackageId>BetterRead.Shared</PackageId>
-        <Authors>iTKerry</Authors>
-        <Company>iTKerry's OpenSource org</Company>
-        <Description>A shared package for better-read projects</Description>
-        <PackageTags>better-read</PackageTags>
-        <RepositoryUrl>https://github.com/itkerry-open-source/better-read-shared</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-
-        <AssemblyVersion>1.0.0</AssemblyVersion>
-        <FileVersion>1.0.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

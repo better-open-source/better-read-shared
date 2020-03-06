@@ -59,7 +59,7 @@ namespace BetterRead.Shared.Services
                 Info = await _infoRepository.GetBookInfoAsync(bookId),
                 Sheets = await _sheetsRepository.GetSheetsAsync(bookId),
                 Contents = await _contentsRepository.GetContentsAsync(bookId),
-                //Notes = await _notesRepository.GetNotesAsync(bookId)
+                Notes = await _notesRepository.GetNotesAsync(bookId)
             };
     }
 }

@@ -17,7 +17,6 @@ namespace BetterRead.Shared.Repository
 
         public BookSheetsRepository()
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _htmlWeb = new HtmlWeb {OverrideEncoding = Encoding.GetEncoding("windows-1251")};
         }
 
