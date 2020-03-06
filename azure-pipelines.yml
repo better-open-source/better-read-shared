@@ -9,7 +9,7 @@ variables:
     buildConfiguration: 'Release'
 
 stages:
-  - stage: Main Stage
+  - stage: Main
     condition: ne(variables['Build.Reason'], 'PullRequest')
     jobs:
       - job: Version
