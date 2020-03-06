@@ -2,15 +2,41 @@ trigger:
   - master
   - develop
 
-pr: none
+pr:
+  - develop
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
+
+variables:
+    buildConfiguration: 'Release'
 
 stages:
-  - stage: Main
-    variables:
-      buildConfiguration: 'Release'
+  - stage: Pull Request
+    condition: eq(variables['Build.Reason'], 'PullRequest')
+    jobs:
+      - job: Test
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet restore'
+            inputs:
+              command: restore
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet build'
+            inputs:
+              command: build
+              arguments: '--no-restore'
+              configuration: $(buildConfiguration)
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet test'
+            inputs:
+              command: test
+              nobuild: true
+              publishTestResults: true
+              configuration: $(buildConfiguration)
+              arguments: '--collect "Code coverage"'
+  - stage: Main Stage
+    condition: ne(variables['Build.Reason'], 'PullRequest')
     jobs:
       - job: Version
         variables: 
@@ -36,7 +62,7 @@ stages:
               echo 'Build Configuration: $(buildConfiguration)'
               echo 'Version Prefix: $(setPrefix.versionPrefix)'
             displayName: Show Version Info
-      - job: Build
+      - job: Publish
         dependsOn: Version
         variables:
           CI_BUILDID: $(Build.BuildId)
