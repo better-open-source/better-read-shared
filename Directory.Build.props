@@ -1,0 +1,50 @@
+<Project>
+    <PropertyGroup>
+        <MsBuildAllProjects>$(MsBuildAllProjects);$(MsBuildThisFileFullPath)</MsBuildAllProjects>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <VersionPrefix>1.5.1</VersionPrefix>
+        <Authors>Alex Katrynets</Authors>
+        <Copyright>Copyright © $([System.DateTime]::Now.Year)</Copyright>
+        <Description>TBA</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>CHANGELOG.md</PackageReleaseNotes>
+
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+        <LangVersion>latest</LangVersion>
+        <PublishRepositoryUrl>https://github.com/itkerry-open-source/better-read-shared</PublishRepositoryUrl>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <Choose>
+        <When Condition=" '$(CI_PRERELEASE)' != '' AND '$(CI_BUILDID)' != '' ">
+            <PropertyGroup>
+                <VersionSuffix>$(CI_PRERELEASE)-build$(CI_BUILDID)</VersionSuffix>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <Choose>
+                <When Condition=" '$(CI_BUILDID)' != '' AND '$(Configuration)' == 'Release' ">
+                    <PropertyGroup>
+                        <VersionPrefix>$(VersionPrefix).$(CI_BUILDID)</VersionPrefix>
+                    </PropertyGroup>
+                </When>
+                <Otherwise>
+                    <Choose>
+                        <When Condition=" '$(Configuration)'=='Release' ">
+                            <PropertyGroup>
+                                <VersionPrefix>$(VersionPrefix).0</VersionPrefix>
+                            </PropertyGroup>
+                        </When>
+                        <Otherwise>
+                            <PropertyGroup>
+                                <VersionSuffix>debug</VersionSuffix>
+                            </PropertyGroup>
+                        </Otherwise>
+                    </Choose>
+                </Otherwise>
+            </Choose>
+        </Otherwise>
+    </Choose>
+</Project>

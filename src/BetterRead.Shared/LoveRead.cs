@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using BetterRead.Shared.Abstractions;
 using BetterRead.Shared.Domain.Book;
