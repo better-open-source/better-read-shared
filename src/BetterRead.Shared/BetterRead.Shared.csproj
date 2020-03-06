@@ -11,5 +11,5 @@
       <ProjectReference Include="..\BetterRead.Shared.Services.Abstractions\BetterRead.Shared.Services.Abstractions.csproj" />
       <ProjectReference Include="..\BetterRead.Shared.Services\BetterRead.Shared.Services.csproj" />
     </ItemGroup>
-
+    
 </Project>
