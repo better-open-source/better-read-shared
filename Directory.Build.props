@@ -6,6 +6,15 @@
     <PropertyGroup>
         <VersionPrefix>1.5.1</VersionPrefix>
         <Authors>Alex Katrynets</Authors>
+        <Copyright>Copyright © $([System.DateTime]::Now.Year)</Copyright>
+        <Description>TBA</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>CHANGELOG.md</PackageReleaseNotes>
+
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+        <LangVersion>latest</LangVersion>
+        <PublishRepositoryUrl>https://github.com/itkerry-open-source/better-read-shared</PublishRepositoryUrl>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <Choose>

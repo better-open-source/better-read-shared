@@ -26,15 +26,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Tests", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository Items", "Repository Items", "{B84477A2-5D9E-4B8D-89AA-5D5FA8A46FB6}"
 ProjectSection(SolutionItems) = preProject
-	azure-pipelines.yml = azure-pipelines.yml
-	Directory.Build.props = Directory.Build.props
+	README.md = README.md
+	LICENSE.md = LICENSE.md
+	CHANGELOG.md = CHANGELOG.md
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{09E16D14-BC52-4B28-97B2-3AD7F027B7CF}"
 ProjectSection(SolutionItems) = preProject
-	CHANGELOG.md = CHANGELOG.md
-	README.md = README.md
-	LICENSE.md = LICENSE.md
+	azure-pipelines.yml = azure-pipelines.yml
+	Directory.Build.props = Directory.Build.props
 EndProjectSection
 EndProject
 Global
