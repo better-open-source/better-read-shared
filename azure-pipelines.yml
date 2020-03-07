@@ -69,6 +69,12 @@ stages:
           CI_BUILDID: $(Build.BuildId)
           CI_PRERELEASE: $[ dependencies.Version.outputs['setPrefix.versionPrefix'] ]
         steps:
+          - task: UseDotNet@2
+            displayName: 'Use .NET Core sdk'
+            inputs:
+              packageType: sdk
+              version: 3.1.100
+              installationPath: $(Agent.ToolsDirectory)/dotnet
           - task: DotNetCoreCLI@2
             displayName: 'dotnet restore'
             inputs:
@@ -93,7 +99,6 @@ stages:
               command: 'pack'
               configuration: $(buildConfiguration)
               packagesToPack: '**/*.csproj'
-              nobuild: true
               includesymbols: true
               includesource: true
               versioningScheme: 'off'
