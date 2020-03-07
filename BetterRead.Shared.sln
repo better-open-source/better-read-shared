@@ -5,6 +5,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Repository.Abstractions", "src\BetterRead.Shared.Repository.Abstractions\BetterRead.Shared.Repository.Abstractions.csproj", "{3DEDB8E7-4C4E-4946-89A4-0A45B3A93ADB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}"
+ProjectSection(SolutionItems) = preProject
+	src\Directory.Build.props = src\Directory.Build.props
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Repository", "src\BetterRead.Shared.Repository\BetterRead.Shared.Repository.csproj", "{A7595D23-96C4-442F-A7E0-74CDE5CCBB74}"
 EndProject
@@ -15,6 +18,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Services.Abstractions", "src\BetterRead.Shared.Services.Abstractions\BetterRead.Shared.Services.Abstractions.csproj", "{89475E54-92AB-47FB-96A4-56BE19FF169B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{DF5F1E96-0B07-404F-AEB3-FCF772913CFF}"
+ProjectSection(SolutionItems) = preProject
+	tests\Directory.Build.props = tests\Directory.Build.props
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Services.Tests", "tests\BetterRead.Shared.Services.Tests\BetterRead.Shared.Services.Tests.csproj", "{77079FD7-0AD1-47C8-97B9-BEA921930ABF}"
 EndProject
