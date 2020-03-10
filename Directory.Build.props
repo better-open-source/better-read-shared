@@ -4,47 +4,12 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <VersionPrefix>1.5.1</VersionPrefix>
-
         <Authors>iTKerry</Authors>
         <Company>iTKerry</Company>
         <Description>A package for better-read projects</Description>
         <PackageTags>better-read</PackageTags>
         <RepositoryUrl>https://github.com/iTKerry/better-read-shared-cs</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-
-        <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <FileVersion>1.0.0.0</FileVersion>
     </PropertyGroup>
 
-    <Choose>
-        <When Condition=" '$(CI_PRERELEASE)' != '' AND '$(CI_BUILDID)' != '' ">
-            <PropertyGroup>
-                <VersionSuffix>$(CI_PRERELEASE)-build$(CI_BUILDID)</VersionSuffix>
-            </PropertyGroup>
-        </When>
-        <Otherwise>
-            <Choose>
-                <When Condition=" '$(CI_BUILDID)' != '' AND '$(Configuration)' == 'Release' ">
-                    <PropertyGroup>
-                        <VersionPrefix>$(VersionPrefix).$(CI_BUILDID)</VersionPrefix>
-                    </PropertyGroup>
-                </When>
-                <Otherwise>
-                    <Choose>
-                        <When Condition=" '$(Configuration)'=='Release' ">
-                            <PropertyGroup>
-                                <VersionPrefix>$(VersionPrefix).0</VersionPrefix>
-                            </PropertyGroup>
-                        </When>
-                        <Otherwise>
-                            <PropertyGroup>
-                                <VersionSuffix>debug</VersionSuffix>
-                            </PropertyGroup>
-                        </Otherwise>
-                    </Choose>
-                </Otherwise>
-            </Choose>
-        </Otherwise>
-    </Choose>
 </Project>

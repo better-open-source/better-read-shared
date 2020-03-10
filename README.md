@@ -7,7 +7,14 @@
 ```                                                  
 
 [![Build Status](https://dev.azure.com/itkerry-open-source/better-read/_apis/build/status/1?api-version=5.1-preview.1)](https://dev.azure.com/itkerry-open-source/better-read/_build?definitionId=1)
+[![Nuget](https://img.shields.io/nuget/v/BetterRead.Shared.svg)](https://www.nuget.org/packages/BetterRead.Shared/)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/itkerry-open-source/better-read-shared/blob/master/LICENSE.md)
+
+## Installation
+
+Available on [nuget](https://www.nuget.org/packages/BetterRead.Shared/)
+
+	PM> Install-Package BetterRead.Shared
 
 ## Contributors
 A big thanks to the project contributors!
