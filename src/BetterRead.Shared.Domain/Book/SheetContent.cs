@@ -7,7 +7,6 @@
             Content = content;
             ContentType = contentType;
         }
-        
         public string Content { get; }
         public SheetContentType ContentType { get; }
     }

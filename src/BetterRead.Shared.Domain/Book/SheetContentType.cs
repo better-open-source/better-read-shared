@@ -4,6 +4,8 @@
     {
         Header,
         Paragraph,
-        Image
+        Image,
+        HyperLink,
+        HyperLinkNote
     }
 }

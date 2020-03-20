@@ -33,33 +33,43 @@ namespace BetterRead.Shared.Services
             _notesRepository = notesRepository ?? throw new ArgumentNullException(nameof(notesRepository));
         }
 
-        public async Task<Book> GetBookByIdAsync(int bookId) => 
+        public async Task<Book> GetBookByIdAsync(int bookId) =>
             await GetBookAsync(bookId);
 
-        public async Task<Book> GetBookByUrlAsync(string url) => 
+        public async Task<Book> GetBookByUrlAsync(string url) =>
             await GetBookAsync(GetBookId(url));
 
-        public async Task<BookInfo> GetBookInfoByIdAsync(int bookId) => 
+        public async Task<BookInfo> GetBookInfoByIdAsync(int bookId) =>
             await _infoRepository.GetBookInfoAsync(bookId);
 
-        public async Task<BookInfo> GetBookInfoByUrlAsync(string url) => 
+        public async Task<BookInfo> GetBookInfoByUrlAsync(string url) =>
             await _infoRepository.GetBookInfoAsync(GetBookId(url));
 
         private static int GetBookId(string url)
         {
             var uri = new Uri(url);
             var queryId = HttpUtility.ParseQueryString(uri.Query).Get("id");
-            
+
             return int.Parse(queryId);
         }
-        
-        private async Task<Book> GetBookAsync(int bookId) =>
-            new Book
+
+        private async Task<Book> GetBookAsync(int bookId)
+        {
+            var info = _infoRepository.GetBookInfoAsync(bookId);
+            var sheets = _sheetsRepository.GetSheetsAsync(bookId);
+            var contents = _contentsRepository.GetContentsAsync(bookId);
+            var notes = _notesRepository.GetNotesAsync(bookId);
+
+            await Task.WhenAll(info, sheets, contents);
+
+            return new Book
             {
-                Info = await _infoRepository.GetBookInfoAsync(bookId),
-                Sheets = await _sheetsRepository.GetSheetsAsync(bookId),
-                Contents = await _contentsRepository.GetContentsAsync(bookId),
-                Notes = await _notesRepository.GetNotesAsync(bookId)
+                Info = await info,
+                Sheets = await sheets,
+                Contents = await contents,
+                Notes = await notes
+
             };
+        }
     }
 }

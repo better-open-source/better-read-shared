@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace BetterRead.Shared.Repository
             var sheets = Enumerable.Range(1, sheetsCount)
                 .Select(i => GetHtmlNodeAsync(bookId, i))
                 .WaitAll()
+                .ToList()
                 .Select(t => new Sheet {Id = t.PageNumber, SheetContents = GetNodeContent(t.Node)});
 
             return sheets;
@@ -39,7 +41,7 @@ namespace BetterRead.Shared.Repository
             var document = await _htmlWeb.LoadFromWebAsync(url);
             return (pageNumber, document.DocumentNode);
         }
-        
+
         private static IEnumerable<SheetContent> GetNodeContent(HtmlNode htmlNode)
         {
             var nodes = htmlNode.QuerySelectorAll("div.MsoNormal").SingleOrDefault()?.ChildNodes;
@@ -49,10 +51,16 @@ namespace BetterRead.Shared.Repository
             {
                 if (node.Attributes.Any(attr => attr.Value == "take_h1"))
                     yield return GetHeaderSheetContent(node);
-                
+
                 if (node.Attributes.Any(attr => attr.Value == "MsoNormal"))
                     yield return GetParagraphSheetContent(node);
-                                
+
+                if (node.ChildNodes.Any(childNode => childNode.Name == "a"))
+                    yield return GetParagraphWithHyperLinkSheetContent(node, "a");
+
+                if (node.Attributes.Any(childNode => childNode.Value.StartsWith("gl")))
+                    yield return GetParagraphWithHyperLinkSheetContent(node.Attributes.FirstOrDefault()?.Value);
+
                 if (node.Attributes.Any(attr => attr.Name == "src" && attr.Value.Contains("img/photo_books/")))
                     yield return GetImageSheetContent(node, BookUrlPatterns.BaseUrl);
             }
@@ -64,12 +72,23 @@ namespace BetterRead.Shared.Repository
         private static SheetContent GetParagraphSheetContent(HtmlNode node) =>
             new SheetContent(node.InnerText, SheetContentType.Paragraph);
 
+        private static SheetContent GetParagraphWithHyperLinkSheetContent(string text) =>
+            new SheetContent(text, SheetContentType.HyperLink);
+
+        private static SheetContent GetParagraphWithHyperLinkSheetContent(HtmlNode node, string type) =>
+            new SheetContent(node.ChildNodes
+                                 .FirstOrDefault(child =>
+                                     child.Name == "a" &&
+                                     child.Attributes.Any(attr => attr.Value.StartsWith("gl")))?.Attributes
+                                 .FirstOrDefault()?.Value ?? "", SheetContentType.HyperLink);
+
+
         private static SheetContent GetImageSheetContent(HtmlNode node, string baseUrl)
         {
             var imageQuery = node.Attributes.FirstOrDefault(attr => attr.Name == "src")?.Value;
             return new SheetContent($"{baseUrl}/{imageQuery}", SheetContentType.Image);
         }
-        
+
         private static int GetSheetsCount(HtmlNode node) =>
             node.QuerySelectorAll("div.navigation > a")
                 .Select(n => n.InnerHtml)

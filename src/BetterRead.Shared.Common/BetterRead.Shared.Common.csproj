@@ -5,4 +5,8 @@
         <PackageId>BetterRead.Shared.Common</PackageId>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="DocX" Version="1.6.0" />
+    </ItemGroup>
+
 </Project>
