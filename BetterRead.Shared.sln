@@ -1,46 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Domain", "src\BetterRead.Shared.Domain\BetterRead.Shared.Domain.csproj", "{6DA1541D-B662-4BE9-B6F9-BE0B47296AF9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Repository.Abstractions", "src\BetterRead.Shared.Repository.Abstractions\BetterRead.Shared.Repository.Abstractions.csproj", "{3DEDB8E7-4C4E-4946-89A4-0A45B3A93ADB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}"
 ProjectSection(SolutionItems) = preProject
 	src\Directory.Build.props = src\Directory.Build.props
 EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Repository", "src\BetterRead.Shared.Repository\BetterRead.Shared.Repository.csproj", "{A7595D23-96C4-442F-A7E0-74CDE5CCBB74}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Common", "src\BetterRead.Shared.Common\BetterRead.Shared.Common.csproj", "{4DD6B4BE-F603-4278-9B91-544E867307BA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Services", "src\BetterRead.Shared.Services\BetterRead.Shared.Services.csproj", "{2A7289CC-CCD3-4818-A611-77E76EB3E318}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Services.Abstractions", "src\BetterRead.Shared.Services.Abstractions\BetterRead.Shared.Services.Abstractions.csproj", "{89475E54-92AB-47FB-96A4-56BE19FF169B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{DF5F1E96-0B07-404F-AEB3-FCF772913CFF}"
 ProjectSection(SolutionItems) = preProject
 	tests\Directory.Build.props = tests\Directory.Build.props
 EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Services.Tests", "tests\BetterRead.Shared.Services.Tests\BetterRead.Shared.Services.Tests.csproj", "{77079FD7-0AD1-47C8-97B9-BEA921930ABF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared", "src\BetterRead.Shared\BetterRead.Shared.csproj", "{B336AEB9-0402-4D09-B382-EC321A47834E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Abstractions", "src\BetterRead.Shared.Abstractions\BetterRead.Shared.Abstractions.csproj", "{9A96D50F-3B2C-4336-81B7-754C043AAF5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRead.Shared.Tests", "tests\BetterRead.Shared.Tests\BetterRead.Shared.Tests.csproj", "{DA06B7F0-4AA9-442B-BEDC-EE8E17F60FC8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository Items", "Repository Items", "{B84477A2-5D9E-4B8D-89AA-5D5FA8A46FB6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BEF2B568-0FD9-443E-9429-544E7F69FA76}"
 ProjectSection(SolutionItems) = preProject
-	README.md = README.md
-	LICENSE.md = LICENSE.md
-	CHANGELOG.md = CHANGELOG.md
+	azure-pipeline.yml = azure-pipeline.yml
+	Directory.Build.props = Directory.Build.props
 EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{09E16D14-BC52-4B28-97B2-3AD7F027B7CF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository Items", "Repository Items", "{50B7BD82-95C2-40D5-A2E7-0482F32F91C8}"
 ProjectSection(SolutionItems) = preProject
-	azure-pipelines.yml = azure-pipelines.yml
-	Directory.Build.props = Directory.Build.props
+	CHANGELOG.md = CHANGELOG.md
+	README.md = README.md
 EndProjectSection
 EndProject
 Global
@@ -49,57 +32,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6DA1541D-B662-4BE9-B6F9-BE0B47296AF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DA1541D-B662-4BE9-B6F9-BE0B47296AF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DA1541D-B662-4BE9-B6F9-BE0B47296AF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DA1541D-B662-4BE9-B6F9-BE0B47296AF9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DEDB8E7-4C4E-4946-89A4-0A45B3A93ADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DEDB8E7-4C4E-4946-89A4-0A45B3A93ADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DEDB8E7-4C4E-4946-89A4-0A45B3A93ADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DEDB8E7-4C4E-4946-89A4-0A45B3A93ADB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7595D23-96C4-442F-A7E0-74CDE5CCBB74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7595D23-96C4-442F-A7E0-74CDE5CCBB74}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7595D23-96C4-442F-A7E0-74CDE5CCBB74}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7595D23-96C4-442F-A7E0-74CDE5CCBB74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4DD6B4BE-F603-4278-9B91-544E867307BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DD6B4BE-F603-4278-9B91-544E867307BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4DD6B4BE-F603-4278-9B91-544E867307BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DD6B4BE-F603-4278-9B91-544E867307BA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A7289CC-CCD3-4818-A611-77E76EB3E318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A7289CC-CCD3-4818-A611-77E76EB3E318}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A7289CC-CCD3-4818-A611-77E76EB3E318}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A7289CC-CCD3-4818-A611-77E76EB3E318}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89475E54-92AB-47FB-96A4-56BE19FF169B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89475E54-92AB-47FB-96A4-56BE19FF169B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89475E54-92AB-47FB-96A4-56BE19FF169B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89475E54-92AB-47FB-96A4-56BE19FF169B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{77079FD7-0AD1-47C8-97B9-BEA921930ABF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{77079FD7-0AD1-47C8-97B9-BEA921930ABF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{77079FD7-0AD1-47C8-97B9-BEA921930ABF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{77079FD7-0AD1-47C8-97B9-BEA921930ABF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B336AEB9-0402-4D09-B382-EC321A47834E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B336AEB9-0402-4D09-B382-EC321A47834E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B336AEB9-0402-4D09-B382-EC321A47834E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B336AEB9-0402-4D09-B382-EC321A47834E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A96D50F-3B2C-4336-81B7-754C043AAF5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A96D50F-3B2C-4336-81B7-754C043AAF5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A96D50F-3B2C-4336-81B7-754C043AAF5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A96D50F-3B2C-4336-81B7-754C043AAF5C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA06B7F0-4AA9-442B-BEDC-EE8E17F60FC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA06B7F0-4AA9-442B-BEDC-EE8E17F60FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA06B7F0-4AA9-442B-BEDC-EE8E17F60FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA06B7F0-4AA9-442B-BEDC-EE8E17F60FC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{6DA1541D-B662-4BE9-B6F9-BE0B47296AF9} = {C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}
-		{3DEDB8E7-4C4E-4946-89A4-0A45B3A93ADB} = {C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}
-		{A7595D23-96C4-442F-A7E0-74CDE5CCBB74} = {C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}
-		{4DD6B4BE-F603-4278-9B91-544E867307BA} = {C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}
-		{2A7289CC-CCD3-4818-A611-77E76EB3E318} = {C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}
-		{89475E54-92AB-47FB-96A4-56BE19FF169B} = {C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}
-		{77079FD7-0AD1-47C8-97B9-BEA921930ABF} = {DF5F1E96-0B07-404F-AEB3-FCF772913CFF}
 		{B336AEB9-0402-4D09-B382-EC321A47834E} = {C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}
-		{9A96D50F-3B2C-4336-81B7-754C043AAF5C} = {C0FCD6CE-94CB-4E9F-873C-A4ADB111292F}
 		{DA06B7F0-4AA9-442B-BEDC-EE8E17F60FC8} = {DF5F1E96-0B07-404F-AEB3-FCF772913CFF}
 	EndGlobalSection
 EndGlobal

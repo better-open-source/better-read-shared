@@ -1,18 +1,13 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
+using NUnit.Framework;
 
 namespace BetterRead.Shared.Tests
 {
     public class LoveReadTests
     {
-        private readonly ITestOutputHelper _testOutputHelper;
 
-        public LoveReadTests(ITestOutputHelper testOutputHelper) => 
-            _testOutputHelper = testOutputHelper;
-
-        [Fact]
+        [Test]
         public async Task GetBookAsync_WithUrl_IsNotNull()
         {
             // Assign
@@ -26,8 +21,8 @@ namespace BetterRead.Shared.Tests
             stopWatch.Stop();
 
             // Assert
-            _testOutputHelper.WriteLine(stopWatch.Elapsed.Seconds.ToString());
-            _testOutputHelper.WriteLine(stopWatch.Elapsed.Milliseconds.ToString());
+            await TestContext.Out.WriteLineAsync(stopWatch.Elapsed.Seconds.ToString());
+            await TestContext.Out.WriteLineAsync(stopWatch.Elapsed.Milliseconds.ToString());
             
             Assert.NotNull(data);
         }

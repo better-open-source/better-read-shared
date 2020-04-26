@@ -15,7 +15,7 @@
 
 Available on [nuget](https://www.nuget.org/packages/BetterRead.Shared/)
 
-	PM> Install-Package BetterRead.Shared
+    PM> Install-Package BetterRead.Shared
 
 ## Contributors
 A big thanks to the project contributors!

@@ -1,37 +1,21 @@
 <Project>
 
     <PropertyGroup>
-        <VersionPrefix>1.5.2</VersionPrefix>
+        <VersionPrefix>1.6.0</VersionPrefix>
     </PropertyGroup>
 
     <Choose>
         <When Condition=" '$(CI_PRERELEASE)' != '' AND '$(CI_BUILDID)' != '' ">
             <PropertyGroup>
-                <VersionSuffix>$(CI_PRERELEASE)-build$(CI_BUILDID)</VersionSuffix>
+                <VersionPrefix>$(VersionPrefix).$(CI_BUILDID)</VersionPrefix>
+                <VersionSuffix>$(CI_PRERELEASE)</VersionSuffix>
             </PropertyGroup>
         </When>
         <Otherwise>
-            <Choose>
-                <When Condition=" '$(CI_BUILDID)' != '' AND '$(Configuration)' == 'Release' ">
-                    <PropertyGroup>
-                        <VersionPrefix>$(VersionPrefix).$(CI_BUILDID)</VersionPrefix>
-                    </PropertyGroup>
-                </When>
-                <Otherwise>
-                    <Choose>
-                        <When Condition=" '$(Configuration)'=='Release' ">
-                            <PropertyGroup>
-                                <VersionPrefix>$(VersionPrefix).0</VersionPrefix>
-                            </PropertyGroup>
-                        </When>
-                        <Otherwise>
-                            <PropertyGroup>
-                                <VersionSuffix>debug</VersionSuffix>
-                            </PropertyGroup>
-                        </Otherwise>
-                    </Choose>
-                </Otherwise>
-            </Choose>
+            <PropertyGroup>
+                <VersionPrefix>$(VersionPrefix)</VersionPrefix>
+            </PropertyGroup>
         </Otherwise>
     </Choose>
+
 </Project>
