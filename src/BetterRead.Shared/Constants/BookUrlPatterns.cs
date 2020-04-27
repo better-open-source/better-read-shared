@@ -1,9 +1,9 @@
 ﻿namespace BetterRead.Shared.Constants
 {
     /// <summary>
-    /// This file contains all URL patterns.
+    /// Contains all URL patterns.
     /// </summary>
-    public static class BookUrlPatterns
+    internal static class BookUrlPatterns
     {
         public const string BaseUrl = "http://loveread.ec";
         

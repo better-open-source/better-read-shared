@@ -1,4 +1,4 @@
-﻿namespace BetterRead.Shared.Infrastructure.Domain.Book
+﻿namespace BetterRead.Shared.Infrastructure.Domain.Books
 {
     public enum SheetContentType
     {

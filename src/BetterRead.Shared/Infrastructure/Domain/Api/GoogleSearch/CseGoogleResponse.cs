@@ -4,7 +4,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace BetterRead.Shared.Infrastructure.Domain.Search
+namespace BetterRead.Shared.Infrastructure.Domain.Api.GoogleSearch
 {
     public partial class CseGoogleResponse
     {

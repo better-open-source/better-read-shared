@@ -5,7 +5,12 @@ using System.Net;
 
 namespace BetterRead.Shared.Infrastructure.Services
 {
-    public class DownloadService : IDownloadService
+    internal interface IDownloadService
+    {
+        string DownloadFile(string url, string fileName, bool isAsync = false);
+    }
+    
+    internal class DownloadService : IDownloadService
     {
         private static readonly string ImgPath;
 
@@ -50,10 +55,5 @@ namespace BetterRead.Shared.Infrastructure.Services
 
             return bytes;
         }
-    }
-
-    public interface IDownloadService
-    {
-        string DownloadFile(string url, string fileName, bool isAsync = false);
     }
 }

@@ -4,18 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Helpers;
-using BetterRead.Shared.Infrastructure.Domain.Book;
+using BetterRead.Shared.Infrastructure.Domain.Books;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 
 namespace BetterRead.Shared.Infrastructure.Repository
 {
-    public interface IBookNotesRepository
+    internal interface IBookNotesRepository
     {
         Task<IEnumerable<Note>> GetNotesAsync(int bookId);
     }
     
-    public class BookNotesRepository : IBookNotesRepository
+    internal class BookNotesRepository : IBookNotesRepository
     {
         private readonly HtmlWeb _htmlWeb;
 
@@ -27,11 +27,13 @@ namespace BetterRead.Shared.Infrastructure.Repository
             var url = string.Format(BookUrlPatterns.Notes, bookId);
 
             var htmlDocument = await _htmlWeb.LoadFromWebAsync(url);
-            var documentNode = htmlDocument.DocumentNode.QuerySelectorAll("td.MsoNormal").FirstOrDefault()?.ChildNodes;
+            var documentNode = htmlDocument.DocumentNode
+                .QuerySelectorAll("td.MsoNormal")
+                .FirstOrDefault()?
+                .ChildNodes;
              
             return documentNode
                 .SplitOn(node => node.Name == "a")
-                .ToList()
                 .Select(g => g.Where(node => !(node is HtmlTextNode)))
                 .Where(g => g.Any())
                 .Select(ConvertNote);
@@ -41,7 +43,7 @@ namespace BetterRead.Shared.Infrastructure.Repository
             new Note
             {
                 Id = Convert.ToInt32(note.FirstOrDefault()?.InnerText),
-                Contents = note.Select(nt => nt.InnerText).ToList()
+                Contents = note.Select(nt => nt.InnerText)
             };
     }
 }

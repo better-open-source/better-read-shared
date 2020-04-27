@@ -1,4 +1,4 @@
-namespace BetterRead.Shared.Infrastructure.Domain.Author
+namespace BetterRead.Shared.Infrastructure.Domain.Authors
 {
     public class AuthorSeries
     {

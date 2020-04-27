@@ -1,6 +1,6 @@
 namespace BetterRead.Shared.Constants
 {
-    public class BooksKeyWords
+    internal static class BooksKeyWords
     {
         public const string BookPart = "Часть";
 

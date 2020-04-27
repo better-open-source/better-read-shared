@@ -3,18 +3,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Helpers;
-using BetterRead.Shared.Infrastructure.Domain.Book;
+using BetterRead.Shared.Infrastructure.Domain.Books;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 
 namespace BetterRead.Shared.Infrastructure.Repository
 {
-    public interface IBookSheetsRepository
+    internal interface IBookSheetsRepository
     {
         Task<IEnumerable<Sheet>> GetSheetsAsync(int bookId);
     }
     
-    public class BookSheetsRepository : IBookSheetsRepository
+    internal class BookSheetsRepository : BaseRepository, IBookSheetsRepository
     {
         private readonly HtmlWeb _htmlWeb;
 
@@ -24,15 +24,10 @@ namespace BetterRead.Shared.Infrastructure.Repository
         public async Task<IEnumerable<Sheet>> GetSheetsAsync(int bookId)
         {
             var firstPageNode = await GetHtmlNodeAsync(bookId, 1);
-            var sheetsCount = GetSheetsCount(firstPageNode.Node);
-
-            var sheets = Enumerable.Range(1, sheetsCount)
+            return Enumerable.Range(1, GetSheetsCount(firstPageNode.Node))
                 .Select(i => GetHtmlNodeAsync(bookId, i))
                 .WaitAll()
-                .ToList()
-                .Select(t => new Sheet {Id = t.PageNumber, SheetContents = GetNodeContent(t.Node)});
-
-            return sheets;
+                .Select(t => new Sheet(t.PageNumber, ExtractSheetContent(t.Node)));
         }
 
         private async Task<(int PageNumber, HtmlNode Node)> GetHtmlNodeAsync(int bookId, int pageNumber)
@@ -42,7 +37,7 @@ namespace BetterRead.Shared.Infrastructure.Repository
             return (pageNumber, document.DocumentNode);
         }
 
-        private static IEnumerable<SheetContent> GetNodeContent(HtmlNode htmlNode)
+        private static IEnumerable<SheetContent> ExtractSheetContent(HtmlNode htmlNode)
         {
             var nodes = htmlNode.QuerySelectorAll("div.MsoNormal").SingleOrDefault()?.ChildNodes;
             if (nodes == null) yield break;
@@ -56,13 +51,13 @@ namespace BetterRead.Shared.Infrastructure.Repository
                     yield return GetParagraphSheetContent(node);
 
                 if (node.ChildNodes.Any(childNode => childNode.Name == "a"))
-                    yield return GetParagraphWithHyperLinkSheetContent(node, "a");
+                    yield return GetParagraphWithHyperLinkSheetContent(node);
 
                 if (node.Attributes.Any(childNode => childNode.Value.StartsWith("gl")))
                     yield return GetParagraphWithHyperLinkSheetContent(node.Attributes.FirstOrDefault()?.Value);
 
                 if (node.Attributes.Any(attr => attr.Name == "src" && attr.Value.Contains("img/photo_books/")))
-                    yield return GetImageSheetContent(node, BookUrlPatterns.BaseUrl);
+                    yield return GetImageSheetContent(node);
             }
         }
 
@@ -75,19 +70,16 @@ namespace BetterRead.Shared.Infrastructure.Repository
         private static SheetContent GetParagraphWithHyperLinkSheetContent(string text) =>
             new SheetContent(text, SheetContentType.HyperLink);
 
-        private static SheetContent GetParagraphWithHyperLinkSheetContent(HtmlNode node, string type) =>
+        private static SheetContent GetParagraphWithHyperLinkSheetContent(HtmlNode node) =>
             new SheetContent(node.ChildNodes
-                                 .FirstOrDefault(child =>
-                                     child.Name == "a" &&
-                                     child.Attributes.Any(attr => attr.Value.StartsWith("gl")))?.Attributes
-                                 .FirstOrDefault()?.Value ?? "", SheetContentType.HyperLink);
+                .FirstOrDefault(child =>
+                    child.Name == "a" &&
+                    child.Attributes.Any(attr => attr.Value.StartsWith("gl")))
+                ?.Attributes
+                .FirstOrDefault()?.Value ?? "", SheetContentType.HyperLink);
 
-
-        private static SheetContent GetImageSheetContent(HtmlNode node, string baseUrl)
-        {
-            var imageQuery = node.Attributes.FirstOrDefault(attr => attr.Name == "src")?.Value;
-            return new SheetContent($"{baseUrl}/{imageQuery}", SheetContentType.Image);
-        }
+        private static SheetContent GetImageSheetContent(HtmlNode node) => 
+            new SheetContent($"{BookUrlPatterns.BaseUrl}/{NodeAttributeValue(node, "src")}", SheetContentType.Image);
 
         private static int GetSheetsCount(HtmlNode node) =>
             node.QuerySelectorAll("div.navigation > a")

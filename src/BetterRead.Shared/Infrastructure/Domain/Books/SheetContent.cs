@@ -1,4 +1,4 @@
-﻿namespace BetterRead.Shared.Infrastructure.Domain.Book
+﻿namespace BetterRead.Shared.Infrastructure.Domain.Books
 {
     public class SheetContent
     {
@@ -7,6 +7,7 @@
             Content = content;
             ContentType = contentType;
         }
+        
         public string Content { get; }
         public SheetContentType ContentType { get; }
     }

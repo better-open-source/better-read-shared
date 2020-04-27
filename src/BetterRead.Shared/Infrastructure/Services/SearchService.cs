@@ -1,69 +1,74 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using BetterRead.Shared.Constants;
-using BetterRead.Shared.Infrastructure.Domain.Author;
-using BetterRead.Shared.Infrastructure.Domain.Book;
-using BetterRead.Shared.Infrastructure.Domain.Search;
+using BetterRead.Shared.Infrastructure.Domain.Api.GoogleSearch;
+using BetterRead.Shared.Infrastructure.Domain.Authors;
+using BetterRead.Shared.Infrastructure.Domain.Books;
 
 namespace BetterRead.Shared.Infrastructure.Services
 {
-    public interface ISearchService
+    internal interface ISearchService
     {
-        Task<List<Book>> SearchBooksAsync(string bookName);
-        Task<List<Author>> SearchAuthorAsync(string bookName);
-        Task<List<AuthorSeries>> SearchSeriesBookAsync(string bookName);
+        Task<IEnumerable<BookInfo>> SearchBooksAsync(string bookName);
+        Task<IEnumerable<Author>> SearchAuthorAsync(string bookName);
+        Task<IEnumerable<AuthorSeries>> SearchSeriesBookAsync(string bookName);
     }
     
-    public class SearchService : ISearchService
+    internal class SearchService : ISearchService
     {
         private readonly IGetJsonDataService _getJsonDataService;
 
-        public SearchService(IGetJsonDataService getJsonDataService)
-        {
+        public SearchService(IGetJsonDataService getJsonDataService) => 
             _getJsonDataService = getJsonDataService;
+
+        public async Task<IEnumerable<BookInfo>> SearchBooksAsync(string bookName)
+        {
+            var results = await Search(bookName, GoogleApiUrls.SearchBooks);
+            return results.Select(result => new BookInfo(
+                bookId:   GetBookId(result.FormattedUrl),
+                name:     result.TitleNoFormatting.Split("- читать")[0],
+                author:   result.TitleNoFormatting.Split("Автор:")[0],
+                url:      result.FormattedUrl,
+                imageUrl: string.Format(BookUrlPatterns.Cover, GetBookId(result.FormattedUrl))));
         }
 
-        public async Task<List<Book>> SearchBooksAsync(string bookName)
+        public async Task<IEnumerable<Author>> SearchAuthorAsync(string authorName)
         {
-            var booksData = await Search(bookName, ApiUrls.addressForBooks, SearchPatterns.BookUrl);
-            return booksData.Select(book => new Book()
-            {
-                Info = new BookInfo()
-                {
-                    Name = book.TitleNoFormatting.Split("- читать")[0],
-                    Author = book.TitleNoFormatting.Split("Автор:")[0],
-                    Url = book.FormattedUrl
-                }
-            }).ToList();
-        }
-
-        public async Task<List<Author>> SearchAuthorAsync(string authorName)
-        {
-            var authorsData = await Search(authorName, ApiUrls.addressForAuthors, SearchPatterns.AuthorUrl);
-            return authorsData.Select(book => new Author()
+            var authorsData = await Search(authorName, GoogleApiUrls.SearchAuthors);
+            return authorsData.Select(book => new Author
             {
                 AuthorName = book.TitleNoFormatting.Split("-")[0],
                 AuthorId = book.FormattedUrl.Split("=")[1],
-            }).ToList();
+            });
         }
 
-        public async Task<List<AuthorSeries>> SearchSeriesBookAsync(string seriesName)
+        public async Task<IEnumerable<AuthorSeries>> SearchSeriesBookAsync(string seriesName)
         {
-            var seriesData = await Search(seriesName, ApiUrls.addressForSeries, SearchPatterns.SeriesUrl);
-            return seriesData.Select(series => new AuthorSeries()
+            var seriesData = await Search(seriesName, GoogleApiUrls.SearchSeries);
+            return seriesData.Select(series => new AuthorSeries
             {
                 CollectionName = series.TitleNoFormatting,
                 CollectionUrl = series.FormattedUrl
-            }).ToList();
+            });
         }
 
-        private async Task<List<Result>> Search(string name, string address, string urlType)
+        private async Task<IEnumerable<Result>> Search(string name, string address)
         {
             var result = await _getJsonDataService.GetDataAsync(name, address);
             return result.Where(rs =>
-                rs.FormattedUrl.ToLower().Contains(urlType) &&
-                rs.TitleNoFormatting.ToLower().Contains((name).ToLower())).ToList();
+                rs.FormattedUrl.ToLower().Contains(BookUrlPatterns.BaseUrl) &&
+                rs.TitleNoFormatting.ToLower().Contains(name.ToLower()));
+        }
+        
+        private static int GetBookId(string url)
+        {
+            var uri = new Uri(url);
+            var queryId = HttpUtility.ParseQueryString(uri.Query).Get("id");
+            
+            return int.Parse(queryId);
         }
     }
 }

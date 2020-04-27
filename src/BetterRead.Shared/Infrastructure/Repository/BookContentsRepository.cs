@@ -2,18 +2,18 @@
 using System.Linq;
 using System.Threading.Tasks;
 using BetterRead.Shared.Constants;
-using BetterRead.Shared.Infrastructure.Domain.Book;
+using BetterRead.Shared.Infrastructure.Domain.Books;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 
 namespace BetterRead.Shared.Infrastructure.Repository
 {
-    public interface IBookContentsRepository
+    internal interface IBookContentsRepository
     {
         Task<IEnumerable<Content>> GetContentsAsync(int bookId);
     }
     
-    public class BookContentsRepository : IBookContentsRepository
+    internal class BookContentsRepository : BaseRepository, IBookContentsRepository
     {
         private readonly HtmlWeb _htmlWeb;
 
@@ -30,13 +30,9 @@ namespace BetterRead.Shared.Infrastructure.Repository
 
         private static IEnumerable<Content> GetContentsFromNode(HtmlNode node) =>
             node.QuerySelectorAll("#oglav_link > li > a")
-                .Select(GetContentFromNode);
+                .Select(MapNodeToContent);
 
-        private static Content GetContentFromNode(HtmlNode node) =>
-            new Content
-            {
-                Link = node.GetAttributeValue("href", string.Empty),
-                Text = node.InnerText
-            };
+        private static Content MapNodeToContent(HtmlNode node) =>
+            new Content(NodeAttributeValue(node, "href"), node.InnerText);
     }
 }

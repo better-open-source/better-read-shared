@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using System.Web;
-using BetterRead.Shared.Infrastructure.Domain.Book;
+using BetterRead.Shared.Infrastructure.Domain.Books;
 using BetterRead.Shared.Infrastructure.Repository;
 
 namespace BetterRead.Shared.Infrastructure.Services
 {
-    public interface IBookService
+    internal interface IBookService
     {
         Task<Book> GetBookByIdAsync(int bookId);
         Task<Book> GetBookByUrlAsync(string url);
@@ -14,7 +14,7 @@ namespace BetterRead.Shared.Infrastructure.Services
         Task<BookInfo> GetBookInfoByUrlAsync(string url);
     }
     
-    public class BookService : IBookService
+    internal class BookService : IBookService
     {
         private readonly IBookInfoRepository _infoRepository;
         private readonly IBookSheetsRepository _sheetsRepository;

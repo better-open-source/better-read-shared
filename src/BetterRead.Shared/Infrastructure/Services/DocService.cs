@@ -3,19 +3,19 @@ using System.IO;
 using System.Linq;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Helpers;
-using BetterRead.Shared.Infrastructure.Domain.Book;
+using BetterRead.Shared.Infrastructure.Domain.Books;
 using Xceed.Document.NET;
 using Xceed.Words.NET;
 
 namespace BetterRead.Shared.Infrastructure.Services
 {
-    public interface IDocService
+    internal interface IDocService
     {
         void Save(Book book);
         void SaveAs(Book book, string path);
     }
-    
-    public class DocService : IDocService
+
+    internal class DocService : IDocService
     {
         private readonly IDownloadService _download;
 
@@ -52,8 +52,8 @@ namespace BetterRead.Shared.Infrastructure.Services
 
             InsertImage(doc, _download.DownloadFile(book.Info.ImageUrl, bookName));
 
-            book.Contents.ToList().ForEach((content) => InsertContents(doc,content));
-            
+            book.Contents.ToList().ForEach(content => InsertContents(doc, content));
+
             foreach (var page in book.Sheets)
             {
                 foreach (var data in page.SheetContents)
@@ -67,7 +67,7 @@ namespace BetterRead.Shared.Infrastructure.Services
                             InsertParagraph(doc, data.Content);
                             break;
                         case SheetContentType.Image:
-                            InsertImage(doc,_download.DownloadFile(data.Content, data.Content.Split('/')[^1]));
+                            InsertImage(doc, _download.DownloadFile(data.Content, data.Content.Split('/')[^1]));
                             break;
                         case SheetContentType.HyperLink:
                             InsertHyperLink(doc, data.Content);
@@ -85,7 +85,7 @@ namespace BetterRead.Shared.Infrastructure.Services
 
             doc.Save();
         }
-        
+
         private void InsertContents(DocX doc, Content note)
         {
             var fontSize = 14d;
@@ -102,7 +102,8 @@ namespace BetterRead.Shared.Infrastructure.Services
                 indentation = 0f;
                 fontSize = 19;
             }
-            CreateHyperLink(indentation,fontSize,bookmarkAnchor,note.Text,doc);
+
+            CreateHyperLink(indentation, fontSize, bookmarkAnchor, note.Text, doc);
         }
 
         private void CreateHyperLink(float indentation, double fontSize, string bookmarkAnchor, string text, DocX doc)
@@ -110,15 +111,16 @@ namespace BetterRead.Shared.Infrastructure.Services
             var h3 = doc.AddHyperlink(text, bookmarkAnchor);
             var p3 = doc.InsertParagraph();
             p3.IndentationBefore = indentation;
-            p3.AddLinkToParagraph(h3,fontSize);
+            p3.AddLinkToParagraph(h3, fontSize);
         }
 
         private void InsertHyperLink(DocX doc, string text)
         {
             if (String.IsNullOrEmpty(text)) return;
             var paragraph = doc.InsertParagraph();
-            paragraph.AppendBookmark( text );
+            paragraph.AppendBookmark(text);
         }
+
         private void InsertParagraph(DocX doc, string text)
         {
             if (string.IsNullOrEmpty(text)) return;
@@ -150,7 +152,5 @@ namespace BetterRead.Shared.Infrastructure.Services
             p.Alignment = Alignment.center;
             p.AppendPicture(picture);
         }
-
-        
     }
 }
