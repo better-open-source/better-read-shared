@@ -52,14 +52,12 @@ namespace BetterRead.Shared.Infrastructure.Services
             
             return int.Parse(queryId);
         }
-        
+
         private async Task<Book> GetBookAsync(int bookId) =>
-            new Book
-            {
-                Info = await _infoRepository.GetBookInfoAsync(bookId),
-                Sheets = await _sheetsRepository.GetSheetsAsync(bookId),
-                Contents = await _contentsRepository.GetContentsAsync(bookId),
-                Notes = await _notesRepository.GetNotesAsync(bookId)
-            };
+            new Book(
+                await _infoRepository.GetBookInfoAsync(bookId),
+                await _sheetsRepository.GetSheetsAsync(bookId),
+                await _contentsRepository.GetContentsAsync(bookId),
+                await _notesRepository.GetNotesAsync(bookId));
     }
 }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BetterExtensions.Collections;
 using BetterRead.Shared.Constants;
-using BetterRead.Shared.Helpers;
 using BetterRead.Shared.Infrastructure.Domain.Books;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
@@ -33,7 +33,7 @@ namespace BetterRead.Shared.Infrastructure.Repository
                 .ChildNodes;
              
             return documentNode
-                .SplitOn(node => node.Name == "a")
+                .SplitWith(node => node.Name == "a")
                 .Select(g => g.Where(node => !(node is HtmlTextNode)))
                 .Where(g => g.Any())
                 .Select(ConvertNote);
