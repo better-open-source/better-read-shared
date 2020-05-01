@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 ProjectSection(SolutionItems) = preProject
 	Directory.Build.props = Directory.Build.props
 	azure-pipelines.yml = azure-pipelines.yml
+	build.sh = build.sh
+	Dockerfile = Dockerfile
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository Items", "Repository Items", "{50B7BD82-95C2-40D5-A2E7-0482F32F91C8}"
