@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Web;
-using BetterRead.Shared.Infrastructure.Domain.Books;
+using BetterRead.Shared.Domain.Books;
 using BetterRead.Shared.Infrastructure.Repository;
 
 namespace BetterRead.Shared.Infrastructure.Services

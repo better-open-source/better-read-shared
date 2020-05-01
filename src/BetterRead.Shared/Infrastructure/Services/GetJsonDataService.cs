@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BetterRead.Shared.Domain.Api.GoogleSearch;
 using BetterRead.Shared.Helpers;
-using BetterRead.Shared.Infrastructure.Domain.Api.GoogleSearch;
 using Newtonsoft.Json;
 
 namespace BetterRead.Shared.Infrastructure.Services

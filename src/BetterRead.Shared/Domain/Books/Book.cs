@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BetterRead.Shared.Infrastructure.Domain.Books
+namespace BetterRead.Shared.Domain.Books
 {
     public class Book
     {

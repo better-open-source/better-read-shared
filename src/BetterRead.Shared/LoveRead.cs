@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using BetterRead.Shared.Infrastructure.Domain.Books;
+using BetterRead.Shared.Domain.Books;
 using BetterRead.Shared.Infrastructure.Repository;
 using BetterRead.Shared.Infrastructure.Services;
 using HtmlAgilityPack;

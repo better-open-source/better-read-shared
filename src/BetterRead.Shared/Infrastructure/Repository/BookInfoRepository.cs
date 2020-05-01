@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using BetterRead.Shared.Constants;
-using BetterRead.Shared.Infrastructure.Domain.Books;
+using BetterRead.Shared.Domain.Books;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 

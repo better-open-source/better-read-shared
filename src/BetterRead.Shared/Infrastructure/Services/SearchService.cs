@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using BetterRead.Shared.Constants;
-using BetterRead.Shared.Infrastructure.Domain.Api.GoogleSearch;
-using BetterRead.Shared.Infrastructure.Domain.Authors;
-using BetterRead.Shared.Infrastructure.Domain.Books;
+using BetterRead.Shared.Domain.Api.GoogleSearch;
+using BetterRead.Shared.Domain.Authors;
+using BetterRead.Shared.Domain.Books;
 
 namespace BetterRead.Shared.Infrastructure.Services
 {
