@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Domain.Books;
 using BetterRead.Shared.Helpers;
@@ -9,27 +11,51 @@ using Xceed.Words.NET;
 
 namespace BetterRead.Shared.Infrastructure.Services
 {
-    internal class DocumentBuilder
+    // ReSharper disable once ClassNeverInstantiated.Global
+    internal class BookDocumentBuilder
     {
-        private enum BuildResultType
+        public static async Task<byte[]> Build(Book book)
         {
-            Success,
-            Failed
+            await using var ms = new MemoryStream();
+            var doc = DocX.Create(ms);
+            var sheetContents = book.Sheets
+                .SelectMany(s => s.SheetContents)
+                .ToArray();
+            
+            doc.DifferentFirstPage = true;
+            doc.AddFooters();
+
+            await InsertImage(book.Info.ImageUrl, doc);
+
+            book.Contents.Each(content => InsertContents(content, doc));
+          
+            BuildSheets(doc, sheetContents);
+             
+            doc.Footers.Even.InsertParagraph("Page №")
+                .AppendPageNumber(PageNumberFormat.normal)
+                .Alignment = Alignment.center;
+            doc.Footers.Odd.InsertParagraph("Page №")
+                .AppendPageNumber(PageNumberFormat.normal)
+                .Alignment = Alignment.center;
+            
+            doc.Save();
+            return ms.ToArray();
         }
 
-        private class BuildResult
-        {
-            public BuildResult(
-                BuildResultType type, 
-                Action<DocX>[] buildActions)
-            {
-                Type = type;
-                BuildActions = buildActions;
-            }
-
-            public BuildResultType Type { get; }
-            public Action<DocX>[] BuildActions { get; }
-        }
+        private static void BuildSheets(DocX docx, SheetContent[] contents) =>
+            ComposeBuilders(
+                    SheetContentBuilder(type => type == SheetContentType.Header, InsertHeader),
+                    SheetContentBuilder(type => type == SheetContentType.Image, InsertImage),
+                    SheetContentBuilder(type => type == SheetContentType.Paragraph, InsertParagraph),
+                    SheetContentBuilder(type => type == SheetContentType.HyperLink, InsertHyperLink))
+                .PipeForward(
+                    ((Func<Func<BuildResult, BuildResult, BuildResult>,
+                        Func<SheetContent[], (BuildResult, SheetContent[])>,
+                        Func<SheetContent[], (BuildResult, SheetContent[])>>) RecursiveBuilders)
+                    .Curry(MergeBuildResult))
+                .Apply(contents)
+                .PipeForward(t => t.Item1.BuildActions)
+                .Each(action => action(docx));
 
         private static Func<SheetContent[], (BuildResult, SheetContent[])> SheetContentBuilder(
             Predicate<SheetContentType> predicate,
@@ -37,18 +63,21 @@ namespace BetterRead.Shared.Infrastructure.Services
             contents =>
             {
                 if (contents.Length <= 0)
-                    return (new BuildResult(BuildResultType.Failed, new Action<DocX>[0]),
+                    return (
+                        new BuildResult(BuildResultType.Failed, new Action<DocX>[0]), 
                         new SheetContent[0]);
 
                 var head = contents[0];
                 var tail = contents[1..];
 
                 if (predicate(head.ContentType))
-                    return (new BuildResult(BuildResultType.Success, new[] {buildAction.Curry(head)}), tail);
+                    return (
+                        new BuildResult(BuildResultType.Success, new[] {buildAction.Curry(head)}), 
+                        tail);
 
-                Console.WriteLine(head.Content);
-                
-                return (new BuildResult(BuildResultType.Failed, new Action<DocX>[0]), new SheetContent[0]);
+                return (
+                    new BuildResult(BuildResultType.Failed, new Action<DocX>[0]), 
+                    new SheetContent[0]);
             };
 
         private static Func<SheetContent[], (BuildResult, SheetContent[])> ComposeBuilders(
@@ -64,7 +93,8 @@ namespace BetterRead.Shared.Infrastructure.Services
                 if (res2.Item1.Type == BuildResultType.Success)
                     return res2;
 
-                return (new BuildResult(BuildResultType.Failed, new Action<DocX>[0]),
+                return (
+                    new BuildResult(BuildResultType.Failed, new Action<DocX>[0]),
                     new SheetContent[0]);
             };
 
@@ -86,85 +116,23 @@ namespace BetterRead.Shared.Infrastructure.Services
             };
 
         private static BuildResult MergeBuildResult(BuildResult result, BuildResult buildResult) =>
-            new BuildResult(BuildResultType.Success, result.BuildActions.With(buildResult.BuildActions).ToArray());
-
-        private static void BuildSheets(DocX docx, SheetContent[] contents) =>
-            ComposeBuilders(
-                    SheetContentBuilder(type => type == SheetContentType.Header, InsertHeader),
-                    SheetContentBuilder(type => type == SheetContentType.Image, InsertImage),
-                    SheetContentBuilder(type => type == SheetContentType.Paragraph, InsertParagraph),
-                    SheetContentBuilder(type => type == SheetContentType.HyperLink, InsertHyperLink))
-                .PipeForward(
-                    ((Func<Func<BuildResult, BuildResult, BuildResult>,
-                        Func<SheetContent[], (BuildResult, SheetContent[])>,
-                        Func<SheetContent[], (BuildResult, SheetContent[])>>) RecursiveBuilders)
-                    .Curry(MergeBuildResult))
-                .Apply(contents)
-                .PipeForward(t => t.Item1.BuildActions)
-                .Each(action => action(docx));
-        
-        public void BuildDocument(Book book)
-        {
-            using var doc = DocX.Create("test.docx");
-            doc.DifferentFirstPage = true;
-            doc.AddFooters();
-
-            //InsertImage(doc, _download.DownloadFile(book.Info.ImageUrl, bookName));
-
-            book.Contents.ToList().ForEach(content => InsertContents(doc, content));
-            var sheetContents = book.Sheets
-                .SelectMany(s => s.SheetContents);
-            
-            BuildSheets(doc, sheetContents.ToArray());
-             
-            var even = doc.Footers.Even.InsertParagraph("Page №");
-            even.Alignment = Alignment.center;
-            even.AppendPageNumber(PageNumberFormat.normal);
-            var odd = doc.Footers.Odd.InsertParagraph("Page №");
-            odd.Alignment = Alignment.center;
-            odd.AppendPageNumber(PageNumberFormat.normal);
-
-            doc.Save();
-        }
-        
-        private static void InsertContents(DocX doc, Content note)
-        {
-            var fontSize = 14d;
-            var indentation = 4f;
-            var bookmarkAnchor = note.Link.Split('#')[^1];
-            
-            if (!note.Text.Contains(BooksKeyWords.Сhapter))
-            {
-                indentation = 6f;
-                fontSize = 12;
-            }
-
-            if (note.Text.Contains(BooksKeyWords.BookPart))
-            {
-                indentation = 0f;
-                fontSize = 19;
-            }
-
-            var h3 = doc.AddHyperlink(note.Text, bookmarkAnchor);
-            var p3 = doc.InsertParagraph();
-            p3.IndentationBefore = indentation;
-            p3.AddLinkToParagraph(h3, fontSize);
-        }
+            new BuildResult(
+                BuildResultType.Success, 
+                result.BuildActions.With(buildResult.BuildActions).ToArray());
 
         private static void InsertHyperLink(SheetContent sheetContent, DocX doc) => 
-            doc.InsertParagraph().AppendBookmark(sheetContent.Content);
+            doc.InsertParagraph()
+                .AppendBookmark(sheetContent.Content);
 
-        private static void InsertParagraph(SheetContent sheetContent, DocX doc)
-        {
-            var text = sheetContent.Content;
-            if (string.IsNullOrEmpty(text)) return;
-            var paragraph = doc.InsertParagraph();
-            paragraph.Append(text).IndentationFirstLine = 1;
-            paragraph.SpacingAfter(5);
-            paragraph.Alignment = Alignment.both;
-            if (Equals(text.First(), '—'))
-                paragraph.Italic();
-        }
+        private static void InsertParagraph(SheetContent sheetContent, DocX doc) =>
+            doc.InsertParagraph()
+                .Append(sheetContent.Content)
+                .SpacingAfter(5)
+                .PipeForward(paragraph =>
+                {
+                    paragraph.IndentationFirstLine = 1;
+                    paragraph.Alignment = Alignment.both;
+                });
 
         private static void InsertHeader(SheetContent sheetContent, DocX doc) =>
             doc.InsertParagraph()
@@ -175,20 +143,52 @@ namespace BetterRead.Shared.Infrastructure.Services
                 .SpacingAfter(13)
                 .Alignment = Alignment.center;
 
-        private static void InsertImage(SheetContent sheetContent, DocX doc)
+        private static void InsertImage(SheetContent sheetContent, DocX doc) =>
+            InsertImage(sheetContent.Content, doc)
+                .PipeForward(task => task.GetAwaiter().GetResult());
+        
+        private static async Task InsertImage(string url, Document doc) => 
+            (await new HttpClient().GetStreamAsync(url))
+                .PipeForward(stream => stream.ToMemoryStream())
+                .PipeForward(stream => doc.AddImage(stream).CreatePicture(400, 400))
+                .PipeForward(picture => doc.InsertParagraph()
+                    .AppendPicture(picture)
+                    .Alignment = Alignment.center);
+        
+        private static void InsertContents(Content note, Document doc)
         {
-            using var httpClient = new HttpClient();
-            var imageStream = httpClient.GetStreamAsync(sheetContent.Content)
-                .GetAwaiter()
-                .GetResult()
-                .ToMemoryStream();
+            var bookmarkAnchor = note.Link.Split('#')[^1];
+            var (fontSize, indentation) = note.Text switch
+            {
+                var str when str.Contains(BooksKeyWords.Сhapter) => (6f, 12),
+                var str when str.Contains(BooksKeyWords.BookPart) => (0f, 19),
+                _ => (14d, 4f)
+            };
             
-            var image = doc.AddImage(imageStream);
-            var picture = image.CreatePicture();
-            picture.Width = 200;
-            var p = doc.InsertParagraph();
-            p.Alignment = Alignment.center;
-            p.AppendPicture(picture);
+            var h3 = doc.AddHyperlink(note.Text, bookmarkAnchor);
+            var p3 = doc.InsertParagraph();
+            p3.IndentationBefore = indentation;
+            p3.AddLinkToParagraph(h3, fontSize);
+        }
+
+        private class BuildResult
+        {
+            public BuildResult(
+                BuildResultType type, 
+                Action<DocX>[] buildActions)
+            {
+                Type = type;
+                BuildActions = buildActions;
+            }
+
+            public BuildResultType Type { get; }
+            public Action<DocX>[] BuildActions { get; }
+        }
+        
+        private enum BuildResultType
+        {
+            Success,
+            Failed
         }
     }
 }
