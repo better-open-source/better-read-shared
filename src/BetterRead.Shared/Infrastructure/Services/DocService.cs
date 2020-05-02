@@ -1,6 +1,6 @@
 using System;
-using System.IO;
 using System.Linq;
+using System.Net.Http;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Helpers;
 using BetterRead.Shared.Infrastructure.Domain.Books;
@@ -9,73 +9,114 @@ using Xceed.Words.NET;
 
 namespace BetterRead.Shared.Infrastructure.Services
 {
-    internal interface IDocService
+    internal class DocumentBuilder
     {
-        void Save(Book book);
-        void SaveAs(Book book, string path);
-    }
-
-    internal class DocService : IDocService
-    {
-        private readonly IDownloadService _download;
-
-        private static readonly string DefaultDownloadPath;
-        private const string FileTemplate = "{0}\\{1}.docx";
-
-        static DocService()
+        private enum BuildResultType
         {
-            DefaultDownloadPath = Directory.GetCurrentDirectory() + "\\Downloads";
+            Success,
+            Failed
         }
 
-        public DocService(IDownloadService download)
+        private class BuildResult
         {
-            _download = download;
+            public BuildResult(
+                BuildResultType type, 
+                Action<DocX>[] buildActions)
+            {
+                Type = type;
+                BuildActions = buildActions;
+            }
+
+            public BuildResultType Type { get; }
+            public Action<DocX>[] BuildActions { get; }
         }
 
-        public void Save(Book book)
-            => SaveAs(book, DefaultDownloadPath);
+        private static Func<SheetContent[], (BuildResult, SheetContent[])> SheetContentBuilder(
+            Predicate<SheetContentType> predicate,
+            Action<SheetContent, DocX> buildAction) =>
+            contents =>
+            {
+                if (contents.Length <= 0)
+                    return (new BuildResult(BuildResultType.Failed, new Action<DocX>[0]),
+                        new SheetContent[0]);
 
-        public void SaveAs(Book book, string path)
+                var head = contents[0];
+                var tail = contents[1..];
+
+                if (predicate(head.ContentType))
+                    return (new BuildResult(BuildResultType.Success, new[] {buildAction.Curry(head)}), tail);
+
+                Console.WriteLine(head.Content);
+                
+                return (new BuildResult(BuildResultType.Failed, new Action<DocX>[0]), new SheetContent[0]);
+            };
+
+        private static Func<SheetContent[], (BuildResult, SheetContent[])> ComposeBuilders(
+            Func<SheetContent[], (BuildResult, SheetContent[])> builder1,
+            Func<SheetContent[], (BuildResult, SheetContent[])> builder2) =>
+            contents =>
+            {
+                var res1 = builder1(contents);
+                if (res1.Item1.Type == BuildResultType.Success)
+                    return res1;
+
+                var res2 = builder2(contents);
+                if (res2.Item1.Type == BuildResultType.Success)
+                    return res2;
+
+                return (new BuildResult(BuildResultType.Failed, new Action<DocX>[0]),
+                    new SheetContent[0]);
+            };
+
+        private static Func<SheetContent[], (BuildResult, SheetContent[])> ComposeBuilders(
+            params Func<SheetContent[], (BuildResult, SheetContent[])>[] builders) =>
+            builders.Aggregate(ComposeBuilders);
+
+        private static Func<SheetContent[], (BuildResult, SheetContent[])> RecursiveBuilders(
+            Func<BuildResult, BuildResult, BuildResult> merger,
+            Func<SheetContent[], (BuildResult, SheetContent[])> builder) =>
+            chars =>
+            {
+                var currentParseResult = builder(chars);
+                if (currentParseResult.Item1.Type == BuildResultType.Failed)
+                    return currentParseResult;
+
+                var (buildResult, sheetContents) = RecursiveBuilders(merger, builder)(currentParseResult.Item2);
+                return (merger(currentParseResult.Item1, buildResult), sheetContents);
+            };
+
+        private static BuildResult MergeBuildResult(BuildResult result, BuildResult buildResult) =>
+            new BuildResult(BuildResultType.Success, result.BuildActions.With(buildResult.BuildActions).ToArray());
+
+        private static void BuildSheets(DocX docx, SheetContent[] contents) =>
+            ComposeBuilders(
+                    SheetContentBuilder(type => type == SheetContentType.Header, InsertHeader),
+                    SheetContentBuilder(type => type == SheetContentType.Image, InsertImage),
+                    SheetContentBuilder(type => type == SheetContentType.Paragraph, InsertParagraph),
+                    SheetContentBuilder(type => type == SheetContentType.HyperLink, InsertHyperLink))
+                .PipeForward(
+                    ((Func<Func<BuildResult, BuildResult, BuildResult>,
+                        Func<SheetContent[], (BuildResult, SheetContent[])>,
+                        Func<SheetContent[], (BuildResult, SheetContent[])>>) RecursiveBuilders)
+                    .Curry(MergeBuildResult))
+                .Apply(contents)
+                .PipeForward(t => t.Item1.BuildActions)
+                .Each(action => action(docx));
+        
+        public void BuildDocument(Book book)
         {
-            var bookName = book.Info.Name.Replace(" ", String.Empty);
-            var fileName = string.Format(FileTemplate, $"{path}\\", bookName);
-
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            if (new DirectoryInfo(path).GetFiles().Any(f => f.Name.Contains(bookName)))
-                return;
-
-            DocX doc = DocX.Create(fileName);
+            using var doc = DocX.Create("test.docx");
             doc.DifferentFirstPage = true;
             doc.AddFooters();
 
-            InsertImage(doc, _download.DownloadFile(book.Info.ImageUrl, bookName));
+            //InsertImage(doc, _download.DownloadFile(book.Info.ImageUrl, bookName));
 
             book.Contents.ToList().ForEach(content => InsertContents(doc, content));
-
-            foreach (var page in book.Sheets)
-            {
-                foreach (var data in page.SheetContents)
-                {
-                    switch (data.ContentType)
-                    {
-                        case SheetContentType.Header:
-                            InsertHeader(doc, data.Content);
-                            break;
-                        case SheetContentType.Paragraph:
-                            InsertParagraph(doc, data.Content);
-                            break;
-                        case SheetContentType.Image:
-                            InsertImage(doc, _download.DownloadFile(data.Content, data.Content.Split('/')[^1]));
-                            break;
-                        case SheetContentType.HyperLink:
-                            InsertHyperLink(doc, data.Content);
-                            break;
-                    }
-                }
-            }
-
+            var sheetContents = book.Sheets
+                .SelectMany(s => s.SheetContents);
+            
+            BuildSheets(doc, sheetContents.ToArray());
+             
             var even = doc.Footers.Even.InsertParagraph("Page №");
             even.Alignment = Alignment.center;
             even.AppendPageNumber(PageNumberFormat.normal);
@@ -85,12 +126,13 @@ namespace BetterRead.Shared.Infrastructure.Services
 
             doc.Save();
         }
-
-        private void InsertContents(DocX doc, Content note)
+        
+        private static void InsertContents(DocX doc, Content note)
         {
             var fontSize = 14d;
             var indentation = 4f;
             var bookmarkAnchor = note.Link.Split('#')[^1];
+            
             if (!note.Text.Contains(BooksKeyWords.Сhapter))
             {
                 indentation = 6f;
@@ -103,26 +145,18 @@ namespace BetterRead.Shared.Infrastructure.Services
                 fontSize = 19;
             }
 
-            CreateHyperLink(indentation, fontSize, bookmarkAnchor, note.Text, doc);
-        }
-
-        private void CreateHyperLink(float indentation, double fontSize, string bookmarkAnchor, string text, DocX doc)
-        {
-            var h3 = doc.AddHyperlink(text, bookmarkAnchor);
+            var h3 = doc.AddHyperlink(note.Text, bookmarkAnchor);
             var p3 = doc.InsertParagraph();
             p3.IndentationBefore = indentation;
             p3.AddLinkToParagraph(h3, fontSize);
         }
 
-        private void InsertHyperLink(DocX doc, string text)
-        {
-            if (String.IsNullOrEmpty(text)) return;
-            var paragraph = doc.InsertParagraph();
-            paragraph.AppendBookmark(text);
-        }
+        private static void InsertHyperLink(SheetContent sheetContent, DocX doc) => 
+            doc.InsertParagraph().AppendBookmark(sheetContent.Content);
 
-        private void InsertParagraph(DocX doc, string text)
+        private static void InsertParagraph(SheetContent sheetContent, DocX doc)
         {
+            var text = sheetContent.Content;
             if (string.IsNullOrEmpty(text)) return;
             var paragraph = doc.InsertParagraph();
             paragraph.Append(text).IndentationFirstLine = 1;
@@ -132,22 +166,26 @@ namespace BetterRead.Shared.Infrastructure.Services
                 paragraph.Italic();
         }
 
-        private void InsertHeader(DocX doc, string text)
-        {
-            var header = doc.InsertParagraph();
-            header.Append(text);
-            header.FontSize(20);
-            header.Alignment = Alignment.center;
-            header.Bold();
-            header.SpacingBefore(15);
-            header.SpacingAfter(13);
-        }
+        private static void InsertHeader(SheetContent sheetContent, DocX doc) =>
+            doc.InsertParagraph()
+                .Append(sheetContent.Content)
+                .FontSize(20)
+                .Bold()
+                .SpacingBefore(15)
+                .SpacingAfter(13)
+                .Alignment = Alignment.center;
 
-        private void InsertImage(DocX doc, string imgPath)
+        private static void InsertImage(SheetContent sheetContent, DocX doc)
         {
-            var image = doc.AddImage(imgPath);
+            using var httpClient = new HttpClient();
+            var imageStream = httpClient.GetStreamAsync(sheetContent.Content)
+                .GetAwaiter()
+                .GetResult()
+                .ToMemoryStream();
+            
+            var image = doc.AddImage(imageStream);
             var picture = image.CreatePicture();
-            picture.Width = 400;
+            picture.Width = 200;
             var p = doc.InsertParagraph();
             p.Alignment = Alignment.center;
             p.AppendPicture(picture);

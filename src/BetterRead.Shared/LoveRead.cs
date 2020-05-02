@@ -48,12 +48,12 @@ namespace BetterRead.Shared
 
         /// <summary>
         /// Constructor
+        /// There should be registered encoding provider to allow cyrillic encoding  
         /// </summary>
         public LoveRead()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            var web = ResolveHtmlWeb();
-            _bookService = ResolveBookService(web);
+            _bookService = ResolveBookService(ResolveHtmlWeb());
         }
 
         /// <inheritdoc />
