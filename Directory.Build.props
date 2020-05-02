@@ -1,15 +1,19 @@
 <Project>
-    <PropertyGroup>
-        <MsBuildAllProjects>$(MsBuildAllProjects);$(MsBuildThisFileFullPath)</MsBuildAllProjects>
-    </PropertyGroup>
 
     <PropertyGroup>
+        <Title>BetterExtensions</Title>
         <Authors>iTKerry</Authors>
-        <Company>iTKerry</Company>
-        <Description>A package for better-read projects</Description>
+        <PackageDescription>Shared package for better-read projects.</PackageDescription>
+        <Copyright>Alex Katrynets</Copyright>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>better-read</PackageTags>
-        <RepositoryUrl>https://github.com/iTKerry/better-read-shared-cs</RepositoryUrl>
+        <RepositoryUrl>https://github.com/better-open-source/better-read-shared</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <LangVersion>8.0</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
 </Project>
