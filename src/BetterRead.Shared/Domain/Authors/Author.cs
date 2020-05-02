@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using BetterRead.Shared.Infrastructure.Domain.Books;
+using BetterRead.Shared.Domain.Books;
 
-namespace BetterRead.Shared.Infrastructure.Domain.Authors
+namespace BetterRead.Shared.Domain.Authors
 {
     public class Author
     {

@@ -1,15 +1,14 @@
-```
-  ____       _   _            ____                _ 
- | __ )  ___| |_| |_ ___ _ __|  _ \ ___  __ _  __| |
- |  _ \ / _ \ __| __/ _ \ '__| |_) / _ \/ _` |/ _` |
- | |_) |  __/ |_| ||  __/ |  |  _ <  __/ (_| | (_| |
- |____/ \___|\__|\__\___|_|  |_| \_\___|\__,_|\__,_|
-```                                                  
+#BetterRead.Shared
 
-[![Build Status](https://dev.azure.com/itkerry-open-source/better-read/_apis/build/status/1?api-version=5.1-preview.1)](https://dev.azure.com/itkerry-open-source/better-read/_build?definitionId=1)
-[![Nuget](https://img.shields.io/nuget/v/BetterRead.Shared.svg)](https://www.nuget.org/packages/BetterRead.Shared/)
-[![Nuget Downloads](https://img.shields.io/nuget/dt/BetterRead.Shared.svg)](https://www.nuget.org/packages/BetterRead.Shared/)
-[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/itkerry-open-source/better-read-shared/blob/master/LICENSE.md)
+[![GitHub license][github-license-badge]][github-license]
+[![nuget-version][nuget-version-badge]][nuget]
+[![nuget-downloads][nuget-downloads-badge]][nuget]
+
+## Status
+| Branch | Build & Test |
+|---|:---|
+|**master**|[![Build & Test][build-master-badge]][build]| 
+|**develop**|[![Build & Test][build-develop-badge]][build]|
 
 ## Installation
 
@@ -21,3 +20,14 @@ Available on [nuget](https://www.nuget.org/packages/BetterRead.Shared/)
 A big thanks to the project contributors!
  * [Denis Stakhiv](https://github.com/lvyyln)
  * [Evhen Kovtunov](https://github.com/idk-ctrl)
+ 
+[github-license-badge]: https://img.shields.io/github/license/mashape/apistatus.svg
+[github-license]: https://github.com/better-open-source/better-read-shared/blob/master/LICENSE.md
+
+[nuget-version-badge]: https://img.shields.io/nuget/v/BetterRead.Shared
+[nuget-downloads-badge]: https://img.shields.io/nuget/dt/BetterRead.Shared.svg
+[nuget]: https://www.nuget.org/packages/BetterRead.Shared/
+
+[build-master-badge]: https://dev.azure.com/better-open-source/better-read/_apis/build/status/BetterRead.Shared?branchName=master
+[build-develop-badge]: https://dev.azure.com/better-open-source/better-read/_apis/build/status/BetterRead.Shared?branchName=develop
+[build]: https://dev.azure.com/better-open-source/better-read/_build?definitionId=1

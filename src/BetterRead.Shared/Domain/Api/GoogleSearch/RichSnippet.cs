@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace BetterRead.Shared.Infrastructure.Domain.Api.GoogleSearch
+namespace BetterRead.Shared.Domain.Api.GoogleSearch
 {
     public class RichSnippet
     {

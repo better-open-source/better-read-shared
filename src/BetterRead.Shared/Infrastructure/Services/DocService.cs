@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using BetterRead.Shared.Constants;
+using BetterRead.Shared.Domain.Books;
 using BetterRead.Shared.Helpers;
-using BetterRead.Shared.Infrastructure.Domain.Books;
 using Xceed.Document.NET;
 using Xceed.Words.NET;
 
