@@ -31,33 +31,5 @@ namespace BetterRead.Shared.Tests
             
             Assert.NotNull(book);
         }
-
-        [Test]
-        public async Task GetBookDocument_SaveLocally()
-        {
-            // Assign
-            var parserWatch = new Stopwatch();
-            var builderWatch = new Stopwatch();
-            
-            // Act
-            parserWatch.Start();
-            var book = await _sut.GetBookAsync(BookUrl);
-            parserWatch.Stop();
-            
-            builderWatch.Start();
-            var content = await _sut.GetBookDocument(book);
-            await File.WriteAllBytesAsync($"{book.Info.Name}.docx", content);
-            builderWatch.Stop();
-
-            // Assert
-            await TestContext.Out.WriteLineAsync("========Parser=========");
-            await TestContext.Out.WriteLineAsync($"Elapsed seconds: {parserWatch.Elapsed.Seconds}");
-            await TestContext.Out.WriteLineAsync($"Elapsed milliseconds: {parserWatch.Elapsed.Milliseconds}");
-            await TestContext.Out.WriteLineAsync("========Builder========");
-            await TestContext.Out.WriteLineAsync($"Elapsed seconds: {builderWatch.Elapsed.Seconds}");
-            await TestContext.Out.WriteLineAsync($"Elapsed milliseconds: {builderWatch.Elapsed.Milliseconds}");
-            
-            Assert.Pass();
-        }
     }
 }
