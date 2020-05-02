@@ -39,6 +39,13 @@ namespace BetterRead.Shared
         /// <param name="url">Book url</param>
         /// <returns>BookInfo</returns>
         Task<BookInfo> GetBookInfoAsync(string url);
+
+        /// <summary>
+        /// Get generated book docx document
+        /// </summary>
+        /// <param name="book">Book object</param>
+        /// <returns>Document as byte array</returns>
+        Task<byte[]> GetBookDocument(Book book);
     }
     
     /// <inheritdoc />
@@ -48,12 +55,12 @@ namespace BetterRead.Shared
 
         /// <summary>
         /// Constructor
+        /// There should be registered encoding provider to allow cyrillic encoding  
         /// </summary>
         public LoveRead()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            var web = ResolveHtmlWeb();
-            _bookService = ResolveBookService(web);
+            _bookService = ResolveBookService(ResolveHtmlWeb());
         }
 
         /// <inheritdoc />
@@ -71,7 +78,11 @@ namespace BetterRead.Shared
         /// <inheritdoc />
         public async Task<BookInfo> GetBookInfoAsync(string url) => 
             await _bookService.GetBookInfoByUrlAsync(url);
-        
+
+        /// <inheritdoc />
+        public async Task<byte[]> GetBookDocument(Book book) =>
+            await BookDocumentBuilder.Build(book);
+
         private static HtmlWeb ResolveHtmlWeb() => 
             new HtmlWeb {OverrideEncoding = Encoding.GetEncoding("windows-1251")};
         
