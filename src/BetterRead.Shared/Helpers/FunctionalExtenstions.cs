@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace BetterRead.Shared.Helpers
 {
+    // Extensions is misspelled. Try install spell-checker
     internal static class FunctionalExtenstions
     {
         public static TRes PipeForward<TArg, TRes>(
@@ -30,7 +31,7 @@ namespace BetterRead.Shared.Helpers
         {
             return arg2 => action(arg1, arg2);
         }
-        
+
         public static IEnumerable<T> With<T>(
             this IEnumerable<T> collection,
             IEnumerable<T> withCollection)
