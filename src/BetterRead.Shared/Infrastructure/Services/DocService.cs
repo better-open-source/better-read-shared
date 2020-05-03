@@ -11,11 +11,15 @@ using Xceed.Words.NET;
 
 namespace BetterRead.Shared.Infrastructure.Services
 {
+    // why not just use static class? ReSharper is right, you really never instantiate it. :)
+    // also, probably good idea will be to specify in more details why exactly you disabling validation    
+    
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class BookDocumentBuilder
     {
         public static async Task<byte[]> Build(Book book)
         {
+            // c# 8.0 is nice. :)
             await using var ms = new MemoryStream();
             var doc = DocX.Create(ms);
             var sheetContents = book.Sheets
@@ -27,6 +31,7 @@ namespace BetterRead.Shared.Infrastructure.Services
 
             await InsertImage(book.Info.ImageUrl, doc);
 
+            // this extension method is pure side-effect. Which doesn't follow functional paradigm that well
             book.Contents.Each(content => InsertContents(content, doc));
           
             BuildSheets(doc, sheetContents);
@@ -54,9 +59,11 @@ namespace BetterRead.Shared.Infrastructure.Services
                         Func<SheetContent[], (BuildResult, SheetContent[])>>) RecursiveBuilders)
                     .Curry(MergeBuildResult))
                 .Apply(contents)
+                // value tuples sucks
                 .PipeForward(t => t.Item1.BuildActions)
                 .Each(action => action(docx));
 
+        // function name should probably contain a verb
         private static Func<SheetContent[], (BuildResult, SheetContent[])> SheetContentBuilder(
             Predicate<SheetContentType> predicate,
             Action<SheetContent, DocX> buildAction) =>
@@ -67,9 +74,11 @@ namespace BetterRead.Shared.Infrastructure.Services
                         new BuildResult(BuildResultType.Failed, new Action<DocX>[0]), 
                         new SheetContent[0]);
 
+                // First & Skip would work as well. :)
                 var head = contents[0];
                 var tail = contents[1..];
 
+                // exception handling?
                 if (predicate(head.ContentType))
                     return (
                         new BuildResult(BuildResultType.Success, new[] {buildAction.Curry(head)}), 
@@ -85,6 +94,7 @@ namespace BetterRead.Shared.Infrastructure.Services
             Func<SheetContent[], (BuildResult, SheetContent[])> builder2) =>
             contents =>
             {
+                // you can extract additional function to avoid code duplication and nasty Item1 usage
                 var res1 = builder1(contents);
                 if (res1.Item1.Type == BuildResultType.Success)
                     return res1;
@@ -102,6 +112,7 @@ namespace BetterRead.Shared.Infrastructure.Services
             params Func<SheetContent[], (BuildResult, SheetContent[])>[] builders) =>
             builders.Aggregate(ComposeBuilders);
 
+        // verb again. It is not a collection of builders, it is operation of some kind. Which isn't reflected in name
         private static Func<SheetContent[], (BuildResult, SheetContent[])> RecursiveBuilders(
             Func<BuildResult, BuildResult, BuildResult> merger,
             Func<SheetContent[], (BuildResult, SheetContent[])> builder) =>
@@ -118,6 +129,7 @@ namespace BetterRead.Shared.Infrastructure.Services
         private static BuildResult MergeBuildResult(BuildResult result, BuildResult buildResult) =>
             new BuildResult(
                 BuildResultType.Success, 
+                // breaks deferred evaluation
                 result.BuildActions.With(buildResult.BuildActions).ToArray());
 
         private static void InsertHyperLink(SheetContent sheetContent, DocX doc) => 
@@ -145,11 +157,13 @@ namespace BetterRead.Shared.Infrastructure.Services
 
         private static void InsertImage(SheetContent sheetContent, DocX doc) =>
             InsertImage(sheetContent.Content, doc)
+                // this is unnecessary
                 .PipeForward(task => task.GetAwaiter().GetResult());
         
         private static async Task InsertImage(string url, Document doc) => 
             (await new HttpClient().GetStreamAsync(url))
                 .PipeForward(stream => stream.ToMemoryStream())
+                // you should probably check aspect ratio of loaded image and 
                 .PipeForward(stream => doc.AddImage(stream).CreatePicture(400, 400))
                 .PipeForward(picture => doc.InsertParagraph()
                     .AppendPicture(picture)
