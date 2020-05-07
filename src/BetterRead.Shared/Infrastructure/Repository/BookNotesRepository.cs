@@ -32,7 +32,7 @@ namespace BetterRead.Shared.Infrastructure.Repository
                 .FirstOrDefault()?
                 .ChildNodes;
              
-            return documentNode
+            return documentNode?
                 .SplitWith(node => node.Name == "a")
                 .Select(g => g.Where(node => !(node is HtmlTextNode)))
                 .Where(g => g.Any())
