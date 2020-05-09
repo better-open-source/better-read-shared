@@ -51,10 +51,10 @@ namespace BetterRead.Shared.Infrastructure.Repository
                     yield return GetParagraphSheetContent(node);
 
                 if (node.ChildNodes.Any(childNode => childNode.Name == "a"))
-                    yield return GetParagraphWithHyperLinkSheetContent(node);
+                    yield return GetHyperLinkSheetContent(node);
 
                 if (node.Attributes.Any(childNode => childNode.Value.StartsWith("gl")))
-                    yield return GetParagraphWithHyperLinkSheetContent(node.Attributes.FirstOrDefault()?.Value);
+                    yield return GetHyperLinkSheetContent(node.Attributes.FirstOrDefault()?.Value);
 
                 if (node.Attributes.Any(attr => attr.Name == "src" && attr.Value.Contains("img/photo_books/")))
                     yield return GetImageSheetContent(node);
@@ -67,10 +67,10 @@ namespace BetterRead.Shared.Infrastructure.Repository
         private static SheetContent GetParagraphSheetContent(HtmlNode node) =>
             new SheetContent(node.InnerText, SheetContentType.Paragraph);
 
-        private static SheetContent GetParagraphWithHyperLinkSheetContent(string text) =>
+        private static SheetContent GetHyperLinkSheetContent(string text) =>
             new SheetContent(text, SheetContentType.HyperLink);
 
-        private static SheetContent GetParagraphWithHyperLinkSheetContent(HtmlNode node) =>
+        private static SheetContent GetHyperLinkSheetContent(HtmlNode node) =>
             new SheetContent(node.ChildNodes
                 .FirstOrDefault(child =>
                     child.Name == "a" &&

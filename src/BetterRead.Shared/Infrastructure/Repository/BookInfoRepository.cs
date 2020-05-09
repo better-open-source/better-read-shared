@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Domain.Books;
+using BetterRead.Shared.Helpers;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 
@@ -19,29 +21,31 @@ namespace BetterRead.Shared.Infrastructure.Repository
         public BookInfoRepository(HtmlWeb htmlWeb) => 
             _htmlWeb = htmlWeb;
 
-        public async Task<BookInfo> GetBookInfoAsync(int bookId)
-        {
-            var url = string.Format(BookUrlPatterns.General, bookId);
-            var htmlDocument = await _htmlWeb.LoadFromWebAsync(url);
-            var documentNode = htmlDocument.DocumentNode;
-
-            return new BookInfo(
-                bookId:   bookId, 
-                name:     ExtractName(bookId, documentNode), 
-                author:   ExtractAuthor(documentNode),
-                url:      url, 
-                imageUrl: string.Format(BookUrlPatterns.Cover, bookId));
-        }
-
-        private static string ExtractName(int bookId, HtmlNode node) =>
-            node.QuerySelectorAll("a")
-                .Where(n => NodeAttributeValue(n, "href").Contains($"read_book.php?id={bookId}"))
+        public async Task<BookInfo> GetBookInfoAsync(int bookId) =>
+            bookId.PipeForward
+                (BuildInfo)
+                (await _htmlWeb.LoadFromWebAsync(BookUrl(bookId)));
+        
+        private static Func<HtmlDocument, BookInfo> BuildInfo(int bookId) =>
+            doc =>
+                new BookInfo(
+                    bookId:   bookId,
+                    name:     Extract(doc)($"read_book.php?id={bookId}"),
+                    author:   Extract(doc)("author="),
+                    url:      BookUrl(bookId),
+                    imageUrl: ImageUrl(bookId));
+        
+        private static Func<string, string> Extract(HtmlDocument document) =>
+            predicate => document.DocumentNode
+                .QuerySelectorAll("a")
+                .Where(n => NodeAttributeValue(n, "href").Contains(predicate))
                 .Select(a => NodeAttributeValue(a, "title"))
-                .First();        
+                .First();
 
-        private static string ExtractAuthor(HtmlNode node) =>
-            node.QuerySelectorAll("a")
-                .First(a => NodeAttributeValue(a, "href").Contains("author="))
-                .GetAttributeValue("title", string.Empty);
+        private static string BookUrl(int bookId) =>
+            string.Format(BookUrlPatterns.General, bookId);
+        
+        private static string ImageUrl(int bookId) =>
+            string.Format(BookUrlPatterns.Cover, bookId);
     }
 }
