@@ -17,6 +17,13 @@ namespace BetterRead.Shared.Helpers
             action(arg);
         }
         
+        public static Func<TArg2, TArg3, TRes> Curry<TArg1, TArg2, TArg3, TRes>(
+            this Func<TArg1, TArg2, TArg3, TRes> func, 
+            TArg1 arg1)
+        {
+            return (arg2, arg3) => func(arg1, arg2, arg3);
+        }
+
         public static Func<TArg2, TRes> Curry<TArg1, TArg2, TRes>(
             this Func<TArg1, TArg2, TRes> func, 
             TArg1 arg1)
