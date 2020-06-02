@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BetterExtensions.Collections;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Domain.Books;
 using BetterRead.Shared.Helpers;
@@ -19,7 +20,7 @@ namespace BetterRead.Shared.Infrastructure.Services
             await using var ms = new MemoryStream();
             var doc = DocX.Create(ms);
             var sheetContents = book.Sheets
-                .SelectMany(s => s.SheetContents)
+                .Collect(s => s.SheetContents)
                 .ToArray();
             
             doc.DifferentFirstPage = true;
@@ -37,6 +38,8 @@ namespace BetterRead.Shared.Infrastructure.Services
             doc.Footers.Odd.InsertParagraph("Page №")
                 .AppendPageNumber(PageNumberFormat.normal)
                 .Alignment = Alignment.center;
+            
+            
             
             doc.Save();
             return ms.ToArray();
@@ -67,8 +70,8 @@ namespace BetterRead.Shared.Infrastructure.Services
                         new BuildResult(BuildResultType.Failed, new Action<DocX>[0]), 
                         new SheetContent[0]);
 
-                var head = contents[0];
-                var tail = contents[1..];
+                var head = contents.First();
+                var tail = contents.Skip(1).ToArray();
 
                 if (predicate(head.ContentType))
                     return (
@@ -100,7 +103,7 @@ namespace BetterRead.Shared.Infrastructure.Services
 
         private static Func<SheetContent[], (BuildResult, SheetContent[])> ComposeBuilders(
             params Func<SheetContent[], (BuildResult, SheetContent[])>[] builders) =>
-            builders.Aggregate(ComposeBuilders);
+            builders.Reduce(ComposeBuilders);
 
         private static Func<SheetContent[], (BuildResult, SheetContent[])> RecursiveBuilders(
             Func<BuildResult, BuildResult, BuildResult> merger,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BetterExtensions.Collections;
 using BetterRead.Shared.Domain.Api.GoogleSearch;
 using BetterRead.Shared.Helpers;
 using Newtonsoft.Json;
@@ -23,9 +24,9 @@ namespace BetterRead.Shared.Infrastructure.Services
             var answer = new Task<CseGoogleResponse>[pagesCount];
 
             return answer
-                .Select((value, index) => GetPageAsync(string.Format(address, index, searchTerm)))
+                .Map((value, index) => GetPageAsync(string.Format(address, index, searchTerm)))
                 .WaitAll()
-                .SelectMany(ans => ans.SearchResults);
+                .Collect(ans => ans.SearchResults);
         }
 
         private static async Task<CseGoogleResponse> GetPageAsync(string url)

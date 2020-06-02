@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BetterExtensions.Collections;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Domain.Books;
 using BetterRead.Shared.Helpers;
@@ -25,9 +26,9 @@ namespace BetterRead.Shared.Infrastructure.Repository
         {
             var firstPageNode = await GetHtmlNodeAsync(bookId, 1);
             return Enumerable.Range(1, GetSheetsCount(firstPageNode.Node))
-                .Select(i => GetHtmlNodeAsync(bookId, i))
+                .Map(i => GetHtmlNodeAsync(bookId, i))
                 .WaitAll()
-                .Select(t => new Sheet(t.PageNumber, ExtractSheetContent(t.Node)));
+                .Map(t => new Sheet(t.PageNumber, ExtractSheetContent(t.Node)));
         }
 
         private async Task<(int PageNumber, HtmlNode Node)> GetHtmlNodeAsync(int bookId, int pageNumber)
@@ -83,9 +84,9 @@ namespace BetterRead.Shared.Infrastructure.Repository
 
         private static int GetSheetsCount(HtmlNode node) =>
             node.QuerySelectorAll("div.navigation > a")
-                .Select(n => n.InnerHtml)
+                .Map(n => n.InnerHtml)
                 .Where(t => int.TryParse(t, out _))
-                .Select(int.Parse)
+                .Map(int.Parse)
                 .Max();
     }
 }

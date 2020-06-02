@@ -34,16 +34,16 @@ namespace BetterRead.Shared.Infrastructure.Repository
              
             return documentNode?
                 .SplitWith(node => node.Name == "a")
-                .Select(g => g.Where(node => !(node is HtmlTextNode)))
+                .Map(g => g.Where(node => !(node is HtmlTextNode)))
                 .Where(g => g.Any())
-                .Select(ConvertNote);
+                .Map(ConvertNote);
         }
 
         private static Note ConvertNote(IEnumerable<HtmlNode> note) =>
             new Note
             {
                 Id = Convert.ToInt32(note.FirstOrDefault()?.InnerText),
-                Contents = note.Select(nt => nt.InnerText)
+                Contents = note.Map(nt => nt.InnerText)
             };
     }
 }

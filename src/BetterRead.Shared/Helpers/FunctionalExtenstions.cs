@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BetterRead.Shared.Helpers
 {
@@ -10,6 +11,13 @@ namespace BetterRead.Shared.Helpers
             Func<TArg, TRes> func)
         {
             return func(arg);
+        }
+        
+        public static void Deconstruct<T>(this IEnumerable<T> source, out T head, out IEnumerable<T> tail)
+        {
+            var list = source.ToArray();
+            head = list.First();
+            tail = new List<T>(list.Skip(1));
         }
         
         public static void PipeForward<TArg>(this TArg arg, Action<TArg> action)

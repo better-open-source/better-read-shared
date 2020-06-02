@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BetterExtensions.Collections;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Domain.Books;
 using Fizzler.Systems.HtmlAgilityPack;
@@ -30,9 +31,9 @@ namespace BetterRead.Shared.Infrastructure.Repository
 
         private static IEnumerable<Content> GetContentsFromNode(HtmlNode node) =>
             node.QuerySelectorAll("#oglav_link > li > a")
-                .Select(MapNodeToContent);
+                .Map(NodeToContent);
 
-        private static Content MapNodeToContent(HtmlNode node) =>
+        private static Content NodeToContent(HtmlNode node) =>
             new Content(NodeAttributeValue(node, "href"), node.InnerText);
     }
 }

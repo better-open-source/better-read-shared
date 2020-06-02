@@ -2,12 +2,13 @@
 
     <PropertyGroup>
         <PackageId>BetterRead.Shared</PackageId>
+        <PackageIcon>..\..\better-read-icon.png</PackageIcon>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BetterExtensions" Version="1.0.0.40-beta" />
+      <PackageReference Include="BetterExtensions" Version="1.0.0.52-beta" />
       <PackageReference Include="DocX" Version="1.6.0" />
       <PackageReference Include="Fizzler.Systems.HtmlAgilityPack" Version="1.2.1" />
       <PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
@@ -15,5 +16,4 @@
       <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
       <PackageReference Include="System.IO.Packaging" Version="4.7.0" />
     </ItemGroup>
-
 </Project>

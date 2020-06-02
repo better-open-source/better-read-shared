@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using BetterExtensions.Collections;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Domain.Api.GoogleSearch;
 using BetterRead.Shared.Domain.Authors;
@@ -27,7 +28,7 @@ namespace BetterRead.Shared.Infrastructure.Services
         public async Task<IEnumerable<BookInfo>> SearchBooksAsync(string bookName)
         {
             var results = await Search(bookName, GoogleApiUrls.SearchBooks);
-            return results.Select(result => new BookInfo(
+            return results.Map(result => new BookInfo(
                 bookId:   GetBookId(result.FormattedUrl),
                 name:     result.TitleNoFormatting.Split("- читать")[0],
                 author:   result.TitleNoFormatting.Split("Автор:")[0],
@@ -38,7 +39,7 @@ namespace BetterRead.Shared.Infrastructure.Services
         public async Task<IEnumerable<Author>> SearchAuthorAsync(string authorName)
         {
             var authorsData = await Search(authorName, GoogleApiUrls.SearchAuthors);
-            return authorsData.Select(book => new Author
+            return authorsData.Map(book => new Author
             {
                 AuthorName = book.TitleNoFormatting.Split("-")[0],
                 AuthorId = book.FormattedUrl.Split("=")[1],
@@ -48,7 +49,7 @@ namespace BetterRead.Shared.Infrastructure.Services
         public async Task<IEnumerable<AuthorSeries>> SearchSeriesBookAsync(string seriesName)
         {
             var seriesData = await Search(seriesName, GoogleApiUrls.SearchSeries);
-            return seriesData.Select(series => new AuthorSeries
+            return seriesData.Map(series => new AuthorSeries
             {
                 CollectionName = series.TitleNoFormatting,
                 CollectionUrl = series.FormattedUrl

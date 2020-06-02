@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BetterExtensions.Collections;
 using BetterRead.Shared.Constants;
 using BetterRead.Shared.Domain.Books;
 using BetterRead.Shared.Helpers;
@@ -30,8 +31,8 @@ namespace BetterRead.Shared.Infrastructure.Repository
             doc =>
                 new BookInfo(
                     bookId:   bookId,
-                    name:     Extract(doc)($"read_book.php?id={bookId}"),
-                    author:   Extract(doc)("author="),
+                    name:     Extract(doc).Apply($"read_book.php?id={bookId}"),
+                    author:   Extract(doc).Apply("author="),
                     url:      BookUrl(bookId),
                     imageUrl: ImageUrl(bookId));
         
@@ -39,7 +40,7 @@ namespace BetterRead.Shared.Infrastructure.Repository
             predicate => document.DocumentNode
                 .QuerySelectorAll("a")
                 .Where(n => NodeAttributeValue(n, "href").Contains(predicate))
-                .Select(a => NodeAttributeValue(a, "title"))
+                .Map(a => NodeAttributeValue(a, "title"))
                 .First();
 
         private static string BookUrl(int bookId) =>
